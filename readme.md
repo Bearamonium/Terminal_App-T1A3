@@ -32,9 +32,15 @@ Loot is a given in any dungeon crawler game, and Amoria won't stray from the tre
 
 ### Amoria's Occupants
 
-### 
-
 ## Implementation Plan
+
+Object Orientated Programming (OOP) will be the main basis of creation for all source code of Amoria. 
+
+- Classes<br>
+        Each class will have it's own abilities, starting inventory and starting gear score
+
+- Dungeon Movement <br>
+        All movement within the dungeon will be held within the gameplay loop, and take user inputs to move their character through each room/floor in the dungeon. 
 
 ## Installation & Guide
 
