@@ -1,6 +1,16 @@
 from random import randint
 inventory = []
 equipment = []
+player_gear_score = 0
+base_hit_chance = 50
+gear_modifer_per_point = 5
+challenge_modifier_per_point = -10
+
+def attack_modifier(gear_score): 
+    return gear_score // 3
+
+def defence_modifier(gear_score): 
+    return gear_score // 2
 
 # Define Item class for all inventory items 
 class Item():
@@ -38,58 +48,61 @@ class Classes():
         self.skills = skills
         self.name = name
 
-    def getHealth(self):
-        return self.health
-    def getGear_Score(self):
-        return self.gear_score
+        def equip_starting_gear(self, starting_weapons, starting_armour):
+            self.inventory = [starting_weapons, starting_armour]
 
 class Warrior(Classes): 
     def __init__(self, health, gear_score, skills, name):
         super().__init__(health, gear_score, skills, name)
-
-    def set_starting_inventory():
-        global inventory
-        inventory = [weapons['Wooden Short Sword'], armour['Chainmail Armour']]
+        self.equip_starting_gear(weapons["Wooden Short Sword"], armour["Chainmail Armour"])
     
 class Rogue: 
     def __init__(self, health, gear_score, skills, name):
         super().__init__(health, gear_score, skills, name)
-
-    def set_starting_inventory():
-        global inventory
-        inventory = [weapons['Wooden Short Bow'], armour['Leather Armour']]
+        self.equip_starting_gear(weapons['Wooden Short Bow'], armour['Leather Armour'])
 
 class Wizard: 
     def __init__(self, health, gear_score, skills, name):
         super().__init__(health, gear_score, skills, name)
-
-    def set_starting_inventory():
-        global inventory
-        inventory = [weapons['Wooden Staff'], armour['Student Robes']]
-
+        self.equip_starting_gear(weapons['Wooden Staff'], armour['Student Robes'])
 
 # Create Enemy classes for within Amoria
-class Enemies: 
-    pass
+class Enemy:
+    def __init__(self, name, challenge_rating, skills):
+        self.name = name
+        self.challenge_rating = challenge_rating
+        self.skills = skills
 
-class Moss_Haggardens(Enemies): 
-    pass
+class MossHaggardens(Enemy):
+    def __init__(self, challenge_rating, skills, swamp_affinity=True):
+        super().__init__("Moss Haggardens", challenge_rating, skills)
+        self.swamp_affinity = swamp_affinity
 
-class Bone_Gnashers(Enemies):
-    pass
+class BoneGnashers(Enemy):
+    def __init__(self, challenge_rating, skills, bone_crush_attack=True):
+        super().__init__("Bone Gnashers", challenge_rating, skills)
+        self.bone_crush_attack = bone_crush_attack
 
-class Gloomweavers(Enemies):
-    pass
+# class Gloomweavers(Enemies):
+#     def __init__(self, gear_score, skills, shadow_manipulation=True):
+#         super().__init__(gear_score, skills)
+#         self.shadow_manipulation = shadow_manipulation
 
-class Whisperers(Enemies):
-    pass
+# class Whisperers(Enemies):
+#     def __init__(self, gear_score, skills, shadow_manipulation=True):
+#         super().__init__(gear_score, skills)
+#         self.shadow_manipulation = shadow_manipulation
 
-class Xhoth(Enemies):
-    pass
+# class Xhoth(Enemies):
+#     def __init__(self, gear_score, skills, shadow_manipulation=True):
+#         super().__init__(gear_score, skills)
+#         self.shadow_manipulation = shadow_manipulation
 
-class Shrill_Chorus(Enemies):
-    pass
-        
+# class Shrill_Chorus(Enemies):
+#     def __init__(self, gear_score, skills, shadow_manipulation=True):
+#         super().__init__(gear_score, skills)
+#         self.shadow_manipulation = shadow_manipulation
+
 # Define Weapons dictionary for all weapons available in the game
 weapons = {
     'Wooden Short Sword' : Weapon("Wooden Sword", 1, 1), 
@@ -130,19 +143,20 @@ rooms = {
         "description" : "A hushed eye of emerald moss, this cave coils on itself, walls draped in velvet silence. Sunlight bleeds through unseen cracks, staining stone with jade and shadow. The air hangs heavy with damp perfume, whispering promises of secrets and slumbering things.", 
         "exits" : {"south" : "passage", "north" : "candle-lit room", "east" : "misty cavern", "west" : "dark cove"}, 
         "items" : [weapons["Iron Sword"], armour["Iron Armour"]], 
-        "enemies" : Moss_Haggardens()
+        "enemies" : [
+            MossHaggardens(5, ["swamp_magic", "toxic_touch"], True)
+            ]
     }, 
     "candle-lit room" : {
         "description" : "A lone flame pierces the gloom, casting long, skeletal shadows that twist and writhe on the floor. The scent of burning wax bleeds into the metallic tang of anticipation, a bitter cocktail in the quiet before the storm.", 
         "exits" : {"south" : "mossy cavern", "north-east" : "Boss Room", "north-west": "Secret Room", "east" : "misty cavern", "west" : "dark cove"}, 
         "items" : [weapons["Iron Sword"], armour["Iron Armour"]], 
-        "enemies" : Whisperers()
     }, 
     "misty cavern" : {
         "description" : "Wispy tendrils of mist weave through the cavern, swallowing light and muffling sound. Each step sinks into unseen depths, sending a shiver up your spine. What lurks within this swirling shroud?", 
         "exits" : {"south" : "mossy cavern", "east" : "dark passageway"}, 
         "items" : [weapons["Iron Sword"], armour["Iron Armour"]], 
-        "enemies" : Bone_Gnashers()
+        # "enemies" : bone_gnashers
     }, 
     "dark passageway" : {
         "description" : "An unnatural silence hangs in the air, broken only by the soft crunch of your boots on unseen debris. No dripping water, no rustle of unseen creatures, just an oppressive quiet that presses against your ears like a physical weight. You swear you can feel eyes watching from the darkness, unseen and hungry.", 
@@ -153,23 +167,14 @@ rooms = {
         "description" : "The scent of cold stone and ancient dust hangs heavy in the air, a shroud woven from forgotten prayers. Statues, frozen in eternal stillness, line the cavern walls. Marble warriors grip rusted swords, their poses contorted in the throes of battle long past. Regal queens stare with vacant eyes, their gilded crowns mocking the passage of time. Grotesque gargoyles leer from shadowed corners, their stone talons poised to snatch, their silent screams etched in the cracks of weathered wings.", 
         "exits" : {"south" : "dark passageway"}, 
         "items" : [items["Fire Orb"]], 
-        "enemies" : Gloomweavers()
+        # "enemies" : gloomweavers
     }
 }
 
-for item in inventory: 
-    print(item.name, item.value, item.gear_score)
-
-player_gear_score = 0
-enemy_gear_score = 0
-
-def attack_modifier(gear_score): 
-    return gear_score // 3
-
-def defence_modifier(gear_score): 
-    return gear_score // 2
-
 current_room = "entrance"
+
+def hit_chance(gear_score, challenge_rating): 
+    return base_hit_chance + gear_score * gear_modifer_per_point + challenge_rating * challenge_modifier_per_point
 
 print("Welcome, Foolhardy Soul, to Amoria's Embrace.\n\nThe ground beneath your feet shivers, not with earthquake, but with a thousand echoing screams. You stand at the precipice of Amoria, where shadows writhe and madness whispers promises in the wind. This is no mere dungeon, adventurer, but a festering wound upon the world, a gateway to horrors beyond mortal comprehension. \n\nHere, hope withers faster than flowers in winter, and courage curdles under the gaze of things best left unseen. Within these obsidian walls, time bends and twists, sanity unravels like silk in a storm, and death is but a prelude to something far worse.\n\nBut you, it seems, possess a curiosity as sharp as a shard of oblivion. Perhaps you seek forbidden knowledge, or treasures worth kingdoms, or simply the thrill of defying the abyss. Whatever your madness, welcome to Amoria.\n\nMay your steps be swift, your blade ever sharp, and your soul, if you have one left, remain your own until the inevitable, echoing end. \n\nNow, enter... if you dare.")
 
@@ -177,47 +182,65 @@ combat_loop = False
 
 while True: 
     print(rooms[current_room]["description"])
+    
+    if "enemies" in rooms[current_room]:
+        # Generate Monster Descriptions
+        for enemy in rooms[current_room]["enemies"]:
+            print(f"You see a {enemy.name} lurking in the shadows!")
+
+    print("What do you want to do?")
+    print("[1] Attack the enemies")
+    print("[2] Explore further")
+    print("[3] Use an item")
+    print("[4] Open Inventory")
+
+    choice = input("> ")
+
+    if choice == "1":
+        combat_loop = True
+        while combat_loop:
+            player_action = input("Attack (a) or flee (f)? ").lower()
+            temp_gear_score = player_gear_score
+
+            if player_action == "a":
+                hit_roll = randint(1, 100)
+                if hit_roll <= hit_chance(player_gear_score, enemy.challenge_rating in rooms[current_room]["enemies"]):
+                    enemy.challenge_rating -= 1
+                    print("You land a blow! The monster's challenge rating is now:", enemy.challenge_rating)
+                    if enemy.challenge_rating <= 0: 
+                        print(f"Victory! You defeated {enemy.name}!")
+                        combat_loop = False
+                else: 
+                    print("Your attack misses.")
+
+            elif player_action == "f": 
+                flee_roll = randint(1, 100)
+                if flee_roll <= 50: 
+                    print("You escap successfully!")
+                    combat_loop = False
+                else: 
+                    print("The monster blocks your escape! You must fight!")
+                    player_action == "a"
+            else: 
+                print("Invalid action - please choose either attack or flee!")
+
+            if enemy.challenge_rating > 0: 
+                monster_roll = randint(1, 100)
+                if monster_roll <= 50 + enemy.challenge_rating * challenge_modifier_per_point:
+                    temp_gear_score -= 1
+                    print("The monster strickes back! Your grear score is now:", temp_gear_score)
+                if temp_gear_score <= 0: 
+                    print("Defeat! Amoria claims another victim to the Abyss...")
+                    combat_loop = False
+                    game_over = True
+
+        if not combat_loop: 
+            print("Press Enter to continue your adventure.")
+            input()
 
     exits = list(rooms[current_room]["exits"].keys())
-    print("Exits: ", ", ".join(exits))
-
-    while "enemies" in rooms[current_room]:
-        combat_loop = True
-        while combat_loop: 
-            for enemy in rooms[current_room]["enemies"]: 
-                print(f"You have encountered {enemy.name}!")
-            atk_def = input("Attack (a) or Defend (d)? ").lower()
-            if action == "a":
-                player_roll = randint(1, 20)
-                enemy_defence = randint(1, 20) + defence_modifier(enemy_gear_score)
-                if player_roll + attack_modifier(player_gear_score) > enemy_defence: 
-                    print(f"You struck the {enemy.name} with a powerful blow!")
-                    # TODO: Implement damage calculations based on the difference between the attack of player and defence of enemy
-                    enemy_gear_score -= 1
-                else: 
-                    print(f"Oh no! The {enemy.name} countered your attack!")
-            elif action == "d":
-                print("You ready yourself for an attack.")
-            else: 
-                print("Invalid action! Please choose to either attack or defend.")
-            
-            if enemy_gear_score > 0: 
-                enemy_roll = randint(1, 20)
-                player_defence = randint(1, 20) + defence_modifier(player_gear_score)
-                if enemy_roll + attack_modifier(enemy_gear_score) > player_defence: 
-                    print(f"The {enemy.name} has landed a blow against you.")
-                    # TODO: Implement damage calculations based on the difference between the attack of player and defence of enemy
-                    player_gear_score -= 1
-                else: 
-                    print(f"You successfully avoid the attack from {enemy.name}")
-            else: 
-                print("You win!")
-                combat_loop = False
-
-            if player_gear_score <= 0: 
-                print("You have sucumbed to the abyss of Amoria. GAME OVER...")
-                combat_loop = False
-
+    for exit in exits:
+        print(f"- {exit.capitalize()}: {rooms[current_room]['exits'][exit]}")
 
     action = input("> ").lower()
 
@@ -235,7 +258,7 @@ while True:
             item = rooms[current_room]["items"][0]
             inventory.append(item)
             print(f"You take the {item}.")
-            del rooms[current_room]["items"]
+            del rooms[current_room][item]
         else: 
             print("There's nothing left here for you to take.")
     elif action == "inventory": 
