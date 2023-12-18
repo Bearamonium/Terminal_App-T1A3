@@ -1,7 +1,6 @@
 from random import randint
 from prettytable import PrettyTable
 
-
 class Inventory_Items: 
     def __init__(self, name, value, quantity=1):
         self.name = name
@@ -65,49 +64,43 @@ class Character:
     def reduce_gear_score(self, damage):
         self.temp_gear_score -= damage
 
+
+
 class Wizard(Character):
-    def __init__(self, lives=1, skills=["Freezing Wind", "Firebolt", "Thunderstrike", "Water Sense"], intelligence=10, dexterity=5, strength=2):
+    def __init__(self, lives=1, skills={"Freezing Wind" : {"damage" : 2, "uses" : 5 }, "Firebolt" : {"damage" : 3, "uses" : 4 }, "Thunderstrike" : {"damage" : 5, "uses" : 2 }, "Water Sense" : {"damage" : 0, "uses" : 5}}, intelligence=10, dexterity=5, strength=2):
         super().__init__("Wizard", lives, skills, intelligence, dexterity, strength)
         self.equipment = [weapons["Wooden Staff"], armour["Student Robes"]]
-
-    def gear_score(self): 
-        return Character.calculate_gear_score(self)
     
-    def firebolt(self, target, uses=3):
-        self.uses = uses
-        if uses > 0:
-            damage = int(2 * randint(1, 2))
+    def Firebolt(self, target):
+        damage = int(3)
+        if player.skills["Firebolt"]["uses"] > 0:
             print(f"A searing bolt of flame scorches {target.name} for {damage} fire damage!")
             target.challenge_rating -= damage
-        elif uses == 0:
+            player.skills["Firebolt"]["uses"] -= 1
+        else:
             print("No more uses left!")
 
-    def freezing_wind(self, target, uses=4):
+    def Freezing_Wind(self, target, uses=5):
         self.uses = uses
-        if uses > 0:
-            damage = int(2)
-            if randint(1, 20) >= 15:
-                damage *= 1.5
-                print(f"A biting wind blasts {target.name}, dealing {damage} ice damage and slowing their movement!")
-            else:
-                print(f"A frigid gale whips towards {target.name}, dealing {damage} ice damage.")
+        damage = int(2)
+        if player.skills["Freezing Wind"]["uses"] > 0:
+            print(f"A frigid gale whips towards {target.name}, dealing {damage} ice damage.")
             target.challenge_rating -= damage
-            uses -= 1
-        elif uses == 0:
-            print("No more uses left!")        
+            player.skills["Freezing Wind"]["uses"] -= 1
+        else:
+            print("No more uses left!")
 
-    def thunderstrike(self, target, uses=3):
+    def Thunderstrike(self, target, uses=2):
         self.uses = uses
-        if uses > 0:
-            damage = int(3)
+        damage = int(5)
+        if player.skills["Thunderstrike"]["uses"] > 0:
             print(f"A bolt of crackling energy surges from your fingertips, striking {target.name} for {damage} lightning damage!")
             target.challenge_rating -= damage
-            uses -= 1
-            print(f"Uses left: {uses}")
+            player.skills["Thunderstrike"]["uses"] -= 1
         elif uses == 0:
             print("No more uses left!")
 
-    def cast_watersense(self, uses=5):
+    def Watersense(self, uses=5):
         self.uses = uses
         if uses > 0:
             print("You feel a deep connection to the surrounding water, unlocking it's secrets to you.")
@@ -116,12 +109,15 @@ class Wizard(Character):
         elif uses == 0:
             print("No more uses left!")
 
+    def gear_score(self):
+        return Character.calculate_gear_score(self)
+
 class Warrior(Character):
     def __init__(self, lives=3, skills=["Upwards Slash", "Ground Smash"], intelligence=2, dexterity=5, strength=10):
         super().__init__("Warrior", lives, skills, intelligence, dexterity, strength)
         self.equipment = [weapons["Wooden Short Sword"], armour["Chainmail Armour"]]
 
-    def upwards_smash(self): 
+    def Upwards_Slash(self): 
         self.uses = 3
         print(f"{player_name} swiftly unleashes their sword in an upwards arc.")
 
@@ -129,15 +125,15 @@ class Warrior(Character):
         self.uses = 5
         print(f"{player_name} smashes downwards with the blade, causing the ground to quake.")
 
-    def gear_score(self): 
+    def gear_score(self):
         return Character.calculate_gear_score(self)
-    
+
 class Rogue(Character):
     def __init__(self, lives=2, skills=["Piercing Shot", "Ambush", "Shadow Arrow"], intelligence=3, dexterity=10, strength=4):
         super().__init__("Rogue", lives, skills, intelligence, dexterity, strength)
         self.equipment = [weapons["Wooden Short Bow"], armour["Leather Armour"]]
 
-    def gear_score(self): 
+    def gear_score(self):
         return Character.calculate_gear_score(self)
 
 class Enemy:
@@ -171,7 +167,7 @@ class BoneGnashers(Enemy):
         if uses > 0:
             damage = int(2 * randint(1, 2))
             print(f"A bone-tipped club swings down, crushing you for {damage} bludgeoning damage!")
-            target.gear_score -= damage
+            target.temp_gear_score -= damage
         elif uses == 0:
             return
 
@@ -200,7 +196,7 @@ class Gloomweavers(Enemy):
         if uses > 0:
             damage = int(3)
             print(f"Whipping tendrils of darkness lash out at you, inflicting {damage} shadow damage!")
-            target.gear_score -= damage
+            target.temp_gear_score -= damage
         elif uses == 0:
             return
 
@@ -245,45 +241,44 @@ else:
 
 player_name = input("What should Amoria know you as, brave adventurer?: ")
 
-print("Please choose your starting class to commence your descent into Amoria.")
+classes = {
+    "Warrior": {
+        "lives": Warrior().lives,
+        "gear_score": Warrior().gear_score,
+        "skills": ", ".join(Warrior().skills),
+    },
+    "Rogue": {
+        "lives": Rogue().lives,
+        "gear_score": Rogue().gear_score,
+        "skills": ", ".join(Rogue().skills),
+    },
+    "Wizard": {
+        "lives": Wizard().lives,
+        "gear_score": Wizard().gear_score,
+        "skills": ", ".join(Wizard().skills),
+    },
+}
 
 class_menu = PrettyTable(["Class", "Lives", "Gear Score", "Skills"])
 
-wizard = Wizard()
-warrior = Warrior()
-rogue = Rogue()
-
-class_menu.add_row(["Wizard", wizard.lives, wizard.gear_score(), ", ".join(wizard.skills)])
-class_menu.add_row(["Warrior", warrior.lives, warrior.gear_score(), ", ".join(warrior.skills)])
-class_menu.add_row(["Rogue", rogue.lives, rogue.gear_score(), ", ".join(rogue.skills)])
+for class_name, class_data in classes.items():
+    class_menu.add_row([class_name, class_data["lives"], class_data["gear_score"](), class_data["skills"]])
 
 print(class_menu)
 
-class_choice = None
+class_choice = input(f"{player_name}, please choose your starting class (Warrior, Rogue, Wizard) to begin your descent into Amoria: ").lower()
 
 while class_choice not in ("warrior", "rogue", "wizard"):
-    class_choice = input(f"{player_name}, please choose your starting class to commence your journey (Warrior, Rogue, Wizard): ").lower()
-    if class_choice in ("warrior", "rogue", "wizard"):
-        continue_choice = input("You have selected " + class_choice.capitalize() + "! Would you like to continue, or choose a different class (y/n)?: ")
-        if continue_choice == "y":
-            # Replace this with actual class instantiation based on your implementation
-            if class_choice == "warrior":
-                player = Warrior()
-            elif class_choice == "rogue":
-                player = Rogue()
-            elif class_choice == "wizard":
-                player = Wizard()
-            break
-        elif continue_choice == "n":
-            class_choice = None
-            print("Please choose again from the class options.")
-    else:
-        print("Invalid entry. Please select from the one of the three classes.")
+    print("Invalid choice. Please choose one of the three classes.")
+    class_choice = input(f"{player_name}, please choose your starting class (Warrior, Rogue, Wizard): ").lower()
 
-if player:
-    print(f"Welcome, {player_name}! Your journey in Amoria begins...")
-else: 
-    print(f"Goodbye, {player_name}. Perhaps another time...")
+# Instantiate player based on the chosen class
+if class_choice == "warrior":
+    player = Warrior()
+elif class_choice == "rogue":
+    player = Rogue()
+elif class_choice == "wizard":
+    player = Wizard()
 
 print("The ground beneath your feet shivers with a thousand echoing screams. You stand at the precipice of Amoria, where shadows writhe and madness whispers promises in the wind. This is no mere dungeon, adventurer, but a festering wound upon the world, a gateway to horrors beyond mortal comprehension. \n\nHere, hope withers faster than flowers in winter, and courage curdles under the gaze of things best left unseen. Within these obsidian walls, time bends and twists, sanity unravels like silk in a storm, and death is but a prelude to something far worse.\n\nBut you, it seems, possess a curiosity as sharp as a shard of oblivion. Perhaps you seek forbidden knowledge, or treasures worth kingdoms, or simply the thrill of defying the abyss. Whatever your madness, welcome to Amoria.\n\nMay your steps be swift, your blade ever sharp, and your soul, if you have one left, remain your own until the inevitable, echoing end. \n\nNow, enter... if you dare.")
 
@@ -309,11 +304,13 @@ rooms = {
     }, 
     "candle-lit room" : {
         "description" : "A lone flame pierces the gloom, casting long, skeletal shadows that twist and writhe on the floor. The scent of burning wax bleeds into the metallic tang of anticipation, a bitter cocktail in the quiet before the storm.", 
+        "additional description" : "Two doors glean against the flickering light; a little one to your front on the left, and a larger, ornate door carved of wooden and latice to your right. Trying the door on your left, it is stuck steadfast, no amount of force will open it. Walking up to the other door, a shiver runs down your spine. Power glows in the vastness behind this door. A small incision opens to the left of the door; a keyhole. Now... where is the key?",
         "exits" : {"south" : "mossy cavern", "north-east" : "Boss Room", "north-west": "Secret Room", "east" : "misty cavern", "west" : "dark cove"}, 
         "items" : [weapons["Iron Sword"], armour["Iron Armour"]], 
         "enemies" : [
             BoneGnashers(10, [BoneGnashers.bone_club_smash], True)
-            ]
+            ], 
+        "item use" : [items["Candle Key"]]
     }, 
     "misty cavern" : {
         "description" : "Wispy tendrils of mist weave through the cavern, swallowing light and muffling sound. Each step sinks into unseen depths, sending a shiver up your spine. What lurks within this swirling shroud?", 
@@ -327,9 +324,13 @@ rooms = {
         "description" : "An unnatural silence hangs in the air, broken only by the soft crunch of your boots on unseen debris. No dripping water, no rustle of unseen creatures, just an oppressive quiet that presses against your ears like a physical weight. You swear you can feel eyes watching from the darkness, unseen and hungry.", 
         "exits" : {"south" : "misty cavern", "north" : "statue room"}, 
         "items" : [items["Candle Key"]], 
-        "item usable" : [items["Fire Orb"]], 
-        "item used" : "The Fire Orb blows up." 
+        "item use" : [items["Fire Orb"]], 
+        "item used" : False, 
+        "new exits" : {"south" : "misty cavern", "north" : "statue room", "west" : "Xhoth's Rest"}
     }, 
+    "Xhoth's Rest" : {
+
+    },
     "statue room" : {
         "description" : "The scent of cold stone and ancient dust hangs heavy in the air, a shroud woven from forgotten prayers. Statues, frozen in eternal stillness, line the cavern walls. Marble warriors grip rusted swords, their poses contorted in the throes of battle long past. Regal queens stare with vacant eyes, their gilded crowns mocking the passage of time. Grotesque gargoyles leer from shadowed corners, their stone talons poised to snatch, their silent screams etched in the cracks of weathered wings.", 
         "exits" : {"south" : "dark passageway"}, 
@@ -338,6 +339,8 @@ rooms = {
 }
 
 current_room = "entrance"
+
+player_items = []
 
 def hit_chance(gear_score, challenge_rating): 
     return gear_score + challenge_rating 
@@ -357,26 +360,26 @@ def game_over():
 
 def attack_list(enemy):
     print("Please select an action.")
-    for skill in player.skills:
-        print(skill)
+
+    skill_menu = PrettyTable(["Skill", "Damage", "Uses"])
+    for skill, stats in player.skills.items(): 
+        skill_menu.add_row([skill, stats["damage"], stats["uses"]])
+    print(skill_menu)
     print("Attack")
     attack_choice = input("Make your selection: ").lower()
     match attack_choice:
         case "firebolt":
             if "Firebolt" in player.skills:
-                player.firebolt(enemy)
-                enemy.challenge_rating -= 3
+                player.Firebolt(enemy)
         case "freezing wind":
             if "Freezing Wind" in player.skills:
-                player.freezing_wind(enemy)
-                enemy.challenge_rating -= 1
+                player.Freezing_Wind(enemy)
         case "thunderstrike":
             if "Thunderstike" in player.skills:
-                player.thunderstrike(enemy)
-                enemy.challenge_rating -= 5
+                player.Thunderstrike(enemy)
         case "water sense":
             if "Water Sense" in player.skills:  
-                player.cast_watersense(enemy)
+                player.Watersense(enemy)
                 print("Through your connection with the water, you are able to see the skills of your opponent:")
                 for enemy in rooms[current_room]["enemies"]:
                     print(enemy.skills)
@@ -403,8 +406,28 @@ def attack_list(enemy):
             else:
                 print("Your attack misses.")
 
-
-player_items = [items["Candle Key"]]
+def use_item():
+    print("What item would you like to use?")
+    for item in player_items:
+        print(f"{item.name}")
+    item_choice = input("> ").lower()
+    match item_choice: 
+        case "candle key":
+            if items["Candle Key"] in rooms[current_room]["item use"]:
+                print("Used 'Candle Key'")
+                rooms[current_room]["item use"].remove(items["Candle Key"])
+                rooms[current_room]["item used"] = True
+            else:
+                print("This item cannot be used in this room.")
+                return
+        case "fire orb":
+            if items["Fire Orb"] in rooms[current_room]["item use"]:
+                print("Used 'Fire Orb'")
+                rooms[current_room]["item use"].remove(items["Fire Orb"])
+                rooms[current_room]["item used"] = True
+            else:
+                print("This item cannot be used in this room.")
+                return
 
 while True: 
     print(rooms[current_room]["description"])
@@ -420,6 +443,7 @@ while True:
                 print(f"You have run into {enemy.name}! Prepare yourself!")
                 combat_loop = True
                 player.temp_gear_score = player.gear_score() # Reset gear score for each encounter
+                print(player.temp_gear_score)
 
                 while combat_loop:
                     player_action = input("Attack (a) or flee (f)? ").lower()
@@ -442,25 +466,27 @@ while True:
                         if randint(1,10) <= 8:
                             skill_choice = randint(1, len(enemy.skills))
                             enemy.skills[skill_choice - 1](player, player)
+                            print(f"Your gear score is currently {player.temp_gear_score}")
                         else:
                             monster_roll = randint(1, 100)
                             if monster_roll <= 50 + enemy.challenge_rating:
                                 player.temp_gear_score -= 1
                                 print("The monster strikes back! Your gear score is now:", player.temp_gear_score)
-                                if player.temp_gear_score <= 0:
-                                    print("Defeat!")
-                                    player.lives -= 1
-                                    if player.lives <= 0:
-                                        print("Amoria claims another victim to the Abyss...\n\nGAME OVER")
-                                        combat_loop = False
-                                        game_over()
+
+                    elif player.temp_gear_score <= 0:
+                        print("Defeat!")
+                        player.lives -= 1
+                        if player.lives <= 0:
+                            print("Amoria claims another victim to the Abyss...\n\nGAME OVER")
+                            combat_loop = False
+                            game_over()
                     elif enemy.challenge_rating <= 0:
                         print(f"Victory! You defeated {enemy.name}!")
                         del rooms[current_room]["enemies"]
                         combat_loop = False
 
-                    else:
-                        print("Something went wrong?")
+                    else: 
+                        print("Something went wrong in the combat loop")
 
             if "items" in rooms[current_room] and len(rooms[current_room]["items"]) > 0:
                 while len(rooms[current_room]["items"]) > 0:
@@ -478,19 +504,22 @@ while True:
                                 else:
                                     player_items.append(item)
                                     rooms[current_room]["items"].remove(item)
-                                break    
+                                break
 
             else: 
+                if rooms[current_room]["additional description"]:
+                    print(rooms[current_room]["additional description"])
+                else:
+                    continue
                 print("This area seems bare of any treasure or surprises.")
-                print(rooms[current_room]["additional description"])
-
                 continue
 
         elif users_choice == "2":
-            if player.inventory:
-                print("What item would you like to use?")
-                for item in player_items:
-                    print(f"{item.name}")
+            if player_items:
+                use_item()
+            else: 
+                print("You have no items in your inventory.")
+
         elif users_choice == "3":
             if player.inventory:
                 inventory_menu = PrettyTable(["Item", "Value", "Gear Score", "Quantity"])
@@ -500,13 +529,11 @@ while True:
                     inventory_menu.add_row([item.name, item.value, item.gear_score, item.quantity])
                 print(inventory_menu)
 
-
     exits = list(rooms[current_room]["exits"].keys())
     for exit in exits:
         print(f"- {exit.capitalize()}: {rooms[current_room]['exits'][exit]}")
 
     action = input("> ").lower()
-
 
     if action in exits: 
         current_room = rooms[current_room]["exits"][action]
