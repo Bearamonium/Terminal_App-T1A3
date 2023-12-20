@@ -11,6 +11,7 @@ class Items(Inventory_Items):
     def __init__(self, name, value, quantity=1):
         super().__init__(name, value, quantity)
         self.gear_score = None
+        self.type = "item"
 
 items = {
     'Golden Sphere' : Items("Golden Sphere", 0), 
@@ -22,6 +23,7 @@ class Weapon(Inventory_Items):
     def __init__(self, name, value, gear_score, quantity=1):
         super().__init__(name, value, quantity)
         self.gear_score = gear_score
+        self.type = "weapon"
 
 weapons = {
     'Wooden Short Sword' : Weapon("Wooden Sword", 1, 3), 
@@ -33,9 +35,10 @@ weapons = {
 }
 
 class Armour(Inventory_Items):
-    def __init__(self, name, value, gear_score, quantity=1):
+    def __init__(self, name, value,gear_score, quantity=1):
         super().__init__(name, value, quantity)
         self.gear_score = gear_score
+        self.type = "armour"
 
 armour = {
     'Chainmail Armour' : Armour("Chainmail Armour", 1, 3),
@@ -62,7 +65,7 @@ class Character:
         self.temp_gear_score = 0
     
     def calculate_gear_score(self): 
-        return sum(item.gear_score for item in self.equipment) + 2
+        return sum(item.gear_score for item in self.equipment.values()) + 2
 
     def reduce_gear_score(self, damage):
         self.temp_gear_score -= damage
@@ -78,7 +81,10 @@ class Character:
 class NightWhisperer(Character):
     def __init__(self, lives=1, skills={}, intelligence=10, dexterity=5, strength=2):
         super().__init__("Night Whisperer", lives, skills, intelligence, dexterity, strength)
-        self.equipment = [weapons["Wooden Staff"], armour["Student Robes"]]
+        self.equipment = {
+            "weapon" : weapons["Wooden Staff"], 
+            "armour" : armour["Student Robes"]
+        }
         self.skills = {
             "Firebolt" : {"damage" : 3, "uses" : 4, "description" : "Channel the blinding brilliance of the sun, firing a searing arrow leaving smoldering trails in its wake."}, 
             "Freezing Wind" : {"damage": 2, "uses" : 5, "description" : "Unleash a scorching arrow imbued with solar fury, exploding on impact and dealing heavy damage to a small area."}, 
@@ -128,7 +134,10 @@ class NightWhisperer(Character):
 class CrimsonBlade(Character):
     def __init__(self, lives=1, skills={}, intelligence=2, dexterity=5, strength=10):
         super().__init__("Crimson Blade", lives, skills, intelligence, dexterity, strength)
-        self.equipment = [weapons["Wooden Short Sword"], armour["Chainmail Armour"]]
+        self.equipment = {
+            "weapon" : weapons["Wooden Short Sword"], 
+            "armour" : armour["Chainmail Armour"]
+        }
         self.skills = {
             "Upwards Slash" : {"damage" : 2, "uses" : 8}, 
             "Ground Smash" : {"damage" : 5, "uses" : 4}
@@ -160,7 +169,10 @@ class CrimsonBlade(Character):
 class SunsHunter(Character):
     def __init__(self, lives=1, skills={}, intelligence=3, dexterity=10, strength=4):
         super().__init__("Sun's Hunter", lives, skills, intelligence, dexterity, strength)
-        self.equipment = [weapons["Wooden Short Bow"], armour["Leather Armour"]]
+        self.equipment = {
+            "weapon" : weapons["Wooden Short Bow"], 
+            "armour" : armour["Leather Armour"]
+        }
         self.skills = {
             "Hymn of Helios" : {"damage" : 2, "uses" : 1, "description" : "Channel the blinding brilliance of the sun, firing a searing arrow leaving smoldering trails in its wake."}, 
             "Sun's Ire" : {"damage": 4, "uses" : 3, "description" : "Unleash a scorching arrow imbued with solar fury, exploding on impact and dealing heavy damage to a small area."}, 
@@ -293,60 +305,250 @@ class Xhoth(Enemy):
         else:
             print("Xhoth's visions flicker harmlessly in {target.name}'s mind.")
 
-print("Welcome, Foolhardy Soul, to Amoria's Embrace.")
+def hit_chance(gear_score, challenge_rating): 
+    return gear_score + challenge_rating 
 
-menu_option = input("Would you like to venture forth? (y/n): ")
+def create_menu():
+    print("What do you want to do?")
+    print("[1] Explore the area")
+    print("[2] Use an item")
+    print("[3] Open Inventory")
+    print("[4] Move")
+    choice = input("> ")
+    return choice
 
-if menu_option == "y":
-    print("The call of Amoria beckons you!")
-elif menu_option == "n":
-    print("A shame, some other time perhaps? Amoria will be waiting...")
+def explore_room():
+    if rooms[current_room]["additional description"]:
+                print(rooms[current_room]["additional description"])
+
+    if "enemies" in rooms[current_room]:
+        enemy = rooms[current_room]["enemies"][0] # Assuming single enemy for now
+        print(f"You have run into {enemy.name}! Prepare yourself!")
+        start_combat(enemy)
+
+    if "items" in rooms[current_room] and len(rooms[current_room]["items"]) > 0:
+        while len(rooms[current_room]["items"]) > 0:
+            for item in rooms[current_room]["items"]:
+                print(f"Something shiny catches your eye. You step closer and find yourself looking at a {item.name}!")
+                user_choice = input("Pick up the item? (y/n) ").lower()
+                match user_choice:
+                    case "y":
+                        if isinstance(item, Weapon):
+                            player.inventory.append(item)
+                            rooms[current_room]["items"].remove(item)
+                        elif isinstance(item, Armour):
+                            player.inventory.append(item)
+                            rooms[current_room]["items"].remove(item)
+                        else:
+                            player.inventory.append(item)
+                            rooms[current_room]["items"].remove(item)
+                        break
+
+    else: 
+        print("This area seems bare of any treasure or surprises.")
+
+def game_over():
+    # TODO: add in choice to restart the adventure or quit the game
     quit()
-else: 
-    print("Invalid input! Please select y or n.")
 
-player_name = input("What should Amoria know you as, brave adventurer?: ")
+def attack_list(enemy):
 
-classes = {
-    "Crimson Blade": {
-        "lives": CrimsonBlade().lives,
-        "gear_score": CrimsonBlade().gear_score,
-        "skills": ", ".join(CrimsonBlade().skills),
-    },
-    "Sun's Hunter": {
-        "lives": SunsHunter().lives,
-        "gear_score": SunsHunter().gear_score,
-        "skills": ", ".join(SunsHunter().skills.keys()),
-        },
-    "Night Whisperer": {
-        "lives": NightWhisperer().lives,
-        "gear_score": NightWhisperer().gear_score,
-        "skills": ", ".join(NightWhisperer().skills),
-    },
-}
+    print("Please select an action.")
 
-class_menu = PrettyTable(["Class", "Lives", "Gear Score", "Skills"])
+    skill_menu = PrettyTable(["Skill", "Damage", "Uses", "Description"])
+    for skill, stats in player.skills.items(): 
+        skill_menu.add_row([skill, stats["damage"], stats["uses"], stats["description"]])
+    skill_menu.add_row(["Basic Attack", 1, "-", "You attack with your current equipped weapon."])
+    print(skill_menu)
+    while True: 
+        attack_choice = input("Make your selection: ").lower()
+        match attack_choice:
+            case "firebolt":
+                if "Firebolt" in player.skills:
+                    player.Firebolt(enemy)
+                    break
+            case "freezing wind":
+                if "Freezing Wind" in player.skills:
+                    player.Freezing_Wind(enemy)
+                    break
+            case "phantom feast":
+                if "Phantom Feast" in player.skills:
+                    player.phantom_feast(enemy)
+                    break
+            case "moonlight barrage":
+                if "Moonlight Barrage" in player.skills:  
+                    player.moonlight_barrage(enemy)
+                    break
+            case "upwards slash":
+                if "Upwards Slash" in player.skills:
+                    player.Upwards_Slash(enemy)
+                    break
+            case "ground smash":
+                if "Ground Smash" in player.skills: 
+                    player.ground_smash(enemy)
+                    break
+            case "hymn of helios":
+                if "Hymn of Helios" in player.skills:
+                    player.hymn_of_helios(enemy)
+                    break
+            case "sun's ire":
+                if "Sun's Ire" in player.skills:
+                    player.suns_ire(enemy)
+                    break
+            case "hunter's volley":
+                if "Hunter's Volley" in player.skills:
+                    player.hunters_volley(enemy)
+                    break
+            case "attack":
+                player.attack(enemy)
+                break
+            case _:
+                print("Invalid entry. Please try again.")
 
-for class_name, class_data in classes.items():
-    class_menu.add_row([class_name, class_data["lives"], class_data["gear_score"](), class_data["skills"]])
+def use_item():
+    print("What item would you like to use?")
+    for item in player.inventory:
+        print(f"{item.name}")
+    item_choice = input("> ").lower()
+    match item_choice: 
+        case "candle key":
+            if items["Candle Key"] in rooms[current_room]["item use"]:
+                print("Used 'Candle Key'")
+                rooms[current_room]["item use"].remove(items["Candle Key"])
+                rooms[current_room]["item used"] = True
+            else:
+                print("This item cannot be used in this room.")
+                return
+        case "fire orb":
+            if items["Fire Orb"] in rooms[current_room]["item use"]:
+                print("Used 'Fire Orb'")
+                rooms[current_room]["item use"].remove(items["Fire Orb"])
+                rooms[current_room]["item used"] = True
+            else:
+                print("This item cannot be used in this room.")
+                return
 
-print(class_menu)
+def manage_inventory():
+    while True: 
+        print("\nInventory:")
+        for i, item in enumerate(player.inventory):
+            print(f"{i+1}. {item.name} ({item.type})")
+        
+        print("\nEquipped Items:")
+        for slot, item in player.equipment.items():
+            print(f"{slot.capitalize()}: {item.name}")
 
-class_choice = input(f"{player_name}, please choose your starting class (Crimson Blade, Sun's Hunter, Night Whisperer) to begin your descent into Amoria: ").lower()
+        choice = input("\nChoose an item to equip (enter 'q' to quit) or 'u' to unequip: ")
+        if choice == "q":
+            break
 
-while class_choice not in ("crimson blade", "sun's hunter", "night whisperer"):
-    print("Invalid choice. Please choose one of the three classes.")
-    class_choice = input(f"{player_name}, please choose your starting class (Warrior, Rogue, Wizard): ").lower()
+        try: 
+            if choice == "u":
+                unequip_item()
+            else: 
+                item_index = int(choice) - 1
+                item = player.inventory[item_index]
+                equip_item(item)
+        except (ValueError, IndexError):
+            print("Invalid Choice. Please enter a valid item number or 'q' to quit.")
 
-# Instantiate player based on the chosen class
-if class_choice == "crimson blade":
-    player = CrimsonBlade()
-elif class_choice == "sun's hunter":
-    player = SunsHunter()
-elif class_choice == "night whisperer":
-    player = NightWhisperer()
+def unequip_item(item):
+    slot = input("Choose a slot to unequip: ")
+    if slot in player.equipment: 
+        item = player.equipment[slot]
+        player.inventory.append(item)
+        del player.equipment[slot]
+        print(f"{item.name} unequipped successfully.")
+    else: 
+        print("Invalid slot.")
 
-print("The ground beneath your feet shivers with a thousand echoing screams. You stand at the precipice of Amoria, where shadows writhe and madness whispers promises in the wind. This is no mere dungeon, adventurer, but a festering wound upon the world, a gateway to horrors beyond mortal comprehension. \n\nHere, hope withers faster than flowers in winter, and courage curdles under the gaze of things best left unseen. Within these obsidian walls, time bends and twists, sanity unravels like silk in a storm, and death is but a prelude to something far worse.\n\nBut you, it seems, possess a curiosity as sharp as a shard of oblivion. Perhaps you seek forbidden knowledge, or treasures worth kingdoms, or simply the thrill of defying the abyss. Whatever your madness, welcome to Amoria.\n\nMay your steps be swift, your blade ever sharp, and your soul, if you have one left, remain your own until the inevitable, echoing end. \n\nNow, enter... if you dare.")
+def equip_item(item):
+    if isinstance(item, Weapon):
+        equip_weapon(item)
+    elif isinstance(item, Armour):
+        equip_armour(item)
+    else: 
+        print("Invalid item type.")
+
+def equip_weapon(weapon):
+    if "weapon" not in player.equipment: 
+        player.equipment["weapon"] = weapon
+        player.inventory.remove(weapon)
+        print("Weapon equipped successfully.")
+    else: 
+        unequip_choice = input(f"You already have a weapon equipped. Unequip {player.equipment['weapon'].name}? (y/n): ")
+        if unequip_choice.lower() == "y":
+            unequip_item("weapon")
+            equip_weapon(weapon)
+
+def equip_armour(armour):
+    if "armour" not in player.equipment: 
+        player.equipment["armour"] = armour
+        player.inventory.remove(armour)
+        print("Armour equipped successfully.")
+    else: 
+        unequip_choice = input(f"You already have armour equipped. Unequip {player.equipment['armour'].name}? (y/n): ")
+        if unequip_choice.lower() == "y":
+            unequip_item("armour")
+            equip_armour(armour)
+
+def start_combat(enemy):
+    global in_combat
+    player.temp_gear_score = player.gear_score() # Reset Gear Score for each encounter seeing as healing hasn't been intialised in this game
+    in_combat = True
+
+    while in_combat: 
+
+        # Players Turn
+        while True: 
+            player_action = input("Attack (a) or Flee (f)? ").lower()
+            if player_action in ("a", "f"):
+                break
+            else: 
+                print("Invalid response. Please enter 'a' or 'f'.")
+
+        if player_action == "a" or (player_action == "f" and flee_failed(enemy)):
+            while True: 
+                if player_action == "f" and flee_failed(enemy):
+                    print("Oh no! The monster has blocked your escape - you have no choice but to attack!")
+                try:
+                    attack_list(enemy)
+                    if enemy.challenge_rating <= 0:
+                        print(f"Victory! You defeated {enemy.name}!")
+                        del rooms[current_room]["enemies"]
+                        in_combat = False
+                    break
+                except NoUsesLeft: 
+                    print("No more uses left for that skill! Choose another action.")
+
+        else:
+            print("You have escaped successfully.")
+            in_combat = False
+
+        if in_combat and enemy.challenge_rating > 0:
+            if randint(1, 10) <= 8:
+                skill_choice = randint(1, len(enemy.skills))
+                enemy.skills[skill_choice - 1](player, player)
+                print(f"Your gear score is currently {player.temp_gear_score}.")
+            else: 
+                monster_roll = randint(1, 100)
+                if monster_roll <= 70 + enemy.challenge_rating: 
+                    player.temp_gear_score -= 2
+                    print("The monster strikes back! Your gear score is now:", player.temp_gear_score)
+            if player.temp_gear_score <= 0:
+                print("Defeat!")
+                player.lives -= 1
+                if player.lives <= 0:
+                    print("Amoria claims another victim to the Abyss...\n\nGAME OVER")
+                    in_combat = False
+                    game_over()
+
+        if not in_combat: 
+            print("Exiting combat.")
+
+def flee_failed(enemy):
+    flee_roll = randint(1, 100)
+    return flee_roll > 50
 
 rooms = {
     "entrance" : {
@@ -406,210 +608,83 @@ rooms = {
 
 current_room = "entrance"
 
-player_items = []
+classes = {
+    "Crimson Blade": {
+        "lives": CrimsonBlade().lives,
+        "gear_score": CrimsonBlade().gear_score,
+        "skills": ", ".join(CrimsonBlade().skills),
+    },
+    "Sun's Hunter": {
+        "lives": SunsHunter().lives,
+        "gear_score": SunsHunter().gear_score,
+        "skills": ", ".join(SunsHunter().skills.keys()),
+        },
+    "Night Whisperer": {
+        "lives": NightWhisperer().lives,
+        "gear_score": NightWhisperer().gear_score,
+        "skills": ", ".join(NightWhisperer().skills),
+    },
+}
 
-def hit_chance(gear_score, challenge_rating): 
-    return gear_score + challenge_rating 
+print("Welcome, Foolhardy Soul, to Amoria's Embrace.")
 
-def create_menu():
-    print("What do you want to do?")
-    print("[1] Explore the area")
-    print("[2] Use an item")
-    print("[3] Open Inventory")
-    print("[4] Move")
-    choice = input("> ")
-    return choice
+menu_option = input("Would you like to venture forth? (y/n): ")
 
-def game_over():
-    # TODO: add in choice to restart the adventure or quit the game
+if menu_option == "y":
+    print("The call of Amoria beckons you!")
+elif menu_option == "n":
+    print("A shame, some other time perhaps? Amoria will be waiting...")
     quit()
+else: 
+    print("Invalid input! Please select y or n.")
 
-def attack_list(enemy):
+player_name = input("What should Amoria know you as, brave adventurer?: ")
 
-    print("Please select an action.")
+class_menu = PrettyTable(["Class", "Lives", "Gear Score", "Skills"])
 
-    skill_menu = PrettyTable(["Skill", "Damage", "Uses", "Description"])
-    for skill, stats in player.skills.items(): 
-        skill_menu.add_row([skill, stats["damage"], stats["uses"], stats["description"]])
-    skill_menu.add_row(["Basic Attack", 1, "-", "You attack with your current equipped weapon."])
-    print(skill_menu)
-    attack_choice = input("Make your selection: ").lower()
-    match attack_choice:
-        case "firebolt":
-            if "Firebolt" in player.skills:
-                player.Firebolt(enemy)
-        case "freezing wind":
-            if "Freezing Wind" in player.skills:
-                player.Freezing_Wind(enemy)
-        case "phantom feast":
-            if "Phantom Feast" in player.skills:
-                player.phantom_feast(enemy)
-        case "moonlight barrage":
-            if "Moonlight Barrage" in player.skills:  
-                player.moonlight_barrage(enemy)
-        case "upwards slash":
-            if "Upwards Slash" in player.skills:
-                player.Upwards_Slash(enemy)
-        case "ground smash":
-            if "Ground Smash" in player.skills: 
-                player.ground_smash(enemy)
-        case "hymn of helios":
-            if "Hymn of Helios" in player.skills:
-                player.hymn_of_helios(enemy)
-        case "sun's ire":
-            if "Sun's Ire" in player.skills:
-                player.suns_ire(enemy)
-        case "hunter's volley":
-            if "Hunter's Volley" in player.skills:
-                player.hunters_volley(enemy)
-        case "attack":
-            player.attack(enemy)
+for class_name, class_data in classes.items():
+    class_menu.add_row([class_name, class_data["lives"], class_data["gear_score"](), class_data["skills"]])
 
-def use_item():
-    print("What item would you like to use?")
-    for item in player_items:
-        print(f"{item.name}")
-    item_choice = input("> ").lower()
-    match item_choice: 
-        case "candle key":
-            if items["Candle Key"] in rooms[current_room]["item use"]:
-                print("Used 'Candle Key'")
-                rooms[current_room]["item use"].remove(items["Candle Key"])
-                rooms[current_room]["item used"] = True
-            else:
-                print("This item cannot be used in this room.")
-                return
-        case "fire orb":
-            if items["Fire Orb"] in rooms[current_room]["item use"]:
-                print("Used 'Fire Orb'")
-                rooms[current_room]["item use"].remove(items["Fire Orb"])
-                rooms[current_room]["item used"] = True
-            else:
-                print("This item cannot be used in this room.")
-                return
+print(class_menu)
+
+class_choice = input(f"{player_name}, please choose your starting class (Crimson Blade, Sun's Hunter, Night Whisperer) to begin your descent into Amoria: ").lower()
+
+while class_choice not in ("crimson blade", "sun's hunter", "night whisperer"):
+    print("Invalid choice. Please choose one of the three classes.")
+    class_choice = input(f"{player_name}, please choose your starting class (Warrior, Rogue, Wizard): ").lower()
+
+# Instantiate player based on the chosen class
+if class_choice == "crimson blade":
+    player = CrimsonBlade()
+elif class_choice == "sun's hunter":
+    player = SunsHunter()
+elif class_choice == "night whisperer":
+    player = NightWhisperer()
+
+print("The ground beneath your feet shivers with a thousand echoing screams. You stand at the precipice of Amoria, where shadows writhe and madness whispers promises in the wind. This is no mere dungeon, adventurer, but a festering wound upon the world, a gateway to horrors beyond mortal comprehension. \n\nHere, hope withers faster than flowers in winter, and courage curdles under the gaze of things best left unseen. Within these obsidian walls, time bends and twists, sanity unravels like silk in a storm, and death is but a prelude to something far worse.\n\nBut you, it seems, possess a curiosity as sharp as a shard of oblivion. Perhaps you seek forbidden knowledge, or treasures worth kingdoms, or simply the thrill of defying the abyss. Whatever your madness, welcome to Amoria.\n\nMay your steps be swift, your blade ever sharp, and your soul, if you have one left, remain your own until the inevitable, echoing end.")
 
 while True: 
     print(rooms[current_room]["description"])
-    
-    users_choice = ""
 
-    while users_choice != "4":
+    while True:
         users_choice = create_menu()
-        if users_choice == "1":
 
-            if "enemies" in rooms[current_room]:
-                enemy = rooms[current_room]["enemies"][0] # Assuming single enemy for now
-                print(f"You have run into {enemy.name}! Prepare yourself!")
-                combat_loop = True
-                player.temp_gear_score = player.gear_score() # Reset gear score for each encounter
-                print(player.temp_gear_score)
+        if users_choice in ["1", "2", "3"]:
+            actions = {
+                "1" : explore_room, 
+                "2" : use_item,
+                "3" : manage_inventory
+            }
+            actions[users_choice]()
 
-                while combat_loop:
-                    # Win/Lose conditions
-                    if enemy.challenge_rating <= 0:
-                        print(f"Victory! You defeated {enemy.name}!")
-                        del rooms[current_room]["enemies"]
-                        combat_loop = False
-                    elif player.temp_gear_score <= 0:
-                        print("Defeat!")
-                        player.lives -= 1
-                        if player.lives <= 0:
-                            print("Amoria claims another victim to the Abyss...\n\nGAME OVER")
-                            game_over()
-                            combat_loop = False
-                    
-                    # Player Input attack or flee
-                    player_action = input("Attack (a) or flee (f)? ").lower()
-                    
-                    # Player turn combat logic 
-                    if player_action == "a":
-                        while True:
-                            try:
-                                attack_list(enemy)
-                            except NoUsesLeft:
-                                print("No more uses left for that skill! Choose another action.")
-                            else: 
-                                break
-                    elif player_action == "f":
-                            flee_roll = randint(1, 100)
-                            if flee_roll <= 50:
-                                print("You escape successfully!")
-                                combat_loop = False
-                            else:
-                                print("The monster blocks your escape! You must fight!")
-                                player_action = "a" # Force player to attack
-                    else:
-                        print("Invalid action - please choose to either attack or flee!")
+            users_choice = ""
 
-                    # Monster turn combat logic
-                    if enemy.challenge_rating > 0 and combat_loop:
-                        if randint(1,10) <= 8:
-                            skill_choice = randint(1, len(enemy.skills))
-                            enemy.skills[skill_choice - 1](player, player)
-                            print(f"Your gear score is currently {player.temp_gear_score}")
-                        else:
-                            monster_roll = randint(1, 100)
-                            if monster_roll <= 50 + enemy.challenge_rating:
-                                player.temp_gear_score -= 1
-                                print("The monster strikes back! Your gear score is now:", player.temp_gear_score)
+        elif users_choice == "4":
+            break
 
-                    else: 
-                        print("Something went wrong in the combat loop")
-
-            if "items" in rooms[current_room] and len(rooms[current_room]["items"]) > 0:
-                while len(rooms[current_room]["items"]) > 0:
-                    for item in rooms[current_room]["items"]:
-                        print(f"Something shiny catches your eye. You step closer and find yourself looking at a {item.name}!")
-                        user_choice = input("Pick up the item? (y/n) ").lower()
-                        match user_choice:
-                            case "y":
-                                if isinstance(item, Weapon):
-                                    player.inventory.append(item)
-                                    rooms[current_room]["items"].remove(item)
-                                elif isinstance(item, Armour):
-                                    player.inventory.append(item)
-                                    rooms[current_room]["items"].remove(item)
-                                else:
-                                    player_items.append(item)
-                                    rooms[current_room]["items"].remove(item)
-                                break
-
-            else: 
-                if rooms[current_room]["additional description"]:
-                    print(rooms[current_room]["additional description"])
-                else:
-                    continue
-                print("This area seems bare of any treasure or surprises.")
-                continue
-
-        elif users_choice == "2":
-            if player_items:
-                use_item()
-            else: 
-                print("You have no items in your inventory.")
-
-        elif users_choice == "3":
-            if player.inventory:
-                inventory_menu = PrettyTable(["Item", "Value", "Gear Score", "Quantity"])
-                for item in player.inventory: 
-                    inventory_menu.add_row([item.name, item.value, item.gear_score, item.quantity])
-                for item in player_items:
-                    inventory_menu.add_row([item.name, item.value, item.gear_score, item.quantity])
-                print(inventory_menu)
-            elif player.equipment: 
-                equipped_items = PrettyTable(["Equipped", "Name", "Gear Score", "Value"])
-                for item in player.equipment: 
-                    if isinstance(item, Weapon):
-                        equipped_items.add_row(["Weapon", item.name, item.gear_score, item.value])
-                    if isinstance(item, Armour):
-                        equipped_items.add_row(["Armour", item.name, item.gear_score, item.value])
-                print(equipped_items)
-            inventory_management = input("Would you like to manage your equipped items?: ")
-            if inventory_management == "y":
-                if item in player.inventory is isinstance(item, Weapon):
-                    player.inventory.remove(item)
-                    player.equipment.append(item)
-
+        else: 
+            print("Invalid choice. Please select a valid option from the menu.")
+            users_choice = ""
 
     exits = list(rooms[current_room]["exits"].keys())
     for exit in exits:
