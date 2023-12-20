@@ -407,23 +407,24 @@ def attack_list(enemy):
 
 def use_item():
     print("What item would you like to use?")
-    for item in player.inventory:
-        print(f"{item.name}")
+    if isinstance(item, Items):
+        for item in player.inventory:
+            print(f"{item.name}")
     item_choice = input("> ").lower()
     match item_choice: 
         case "candle key":
             if items["Candle Key"] in rooms[current_room]["item use"]:
-                print("Used 'Candle Key'")
+                print("Used 'Candle Key'.")
                 rooms[current_room]["item use"].remove(items["Candle Key"])
-                rooms[current_room]["item used"] = True
+                rooms[current_room]["exits"] = rooms[current_room]["item used exits"]
             else:
                 print("This item cannot be used in this room.")
                 return
         case "fire orb":
             if items["Fire Orb"] in rooms[current_room]["item use"]:
-                print("Used 'Fire Orb'")
+                print("Used 'Fire Orb'.")
                 rooms[current_room]["item use"].remove(items["Fire Orb"])
-                rooms[current_room]["item used"] = True
+                rooms[current_room]["exits"] = rooms[current_room]["item used exits"]
             else:
                 print("This item cannot be used in this room.")
                 return
@@ -573,16 +574,17 @@ rooms = {
     "candle-lit room" : {
         "description" : "A lone flame pierces the gloom, casting long, skeletal shadows that twist and writhe on the floor. The scent of burning wax bleeds into the metallic tang of anticipation, a bitter cocktail in the quiet before the storm.", 
         "additional description" : "Two doors glean against the flickering light; a little one to your front on the left, and a larger, ornate door carved of wooden and latice to your right. Trying the door on your left, it is stuck steadfast, no amount of force will open it. Walking up to the other door, a shiver runs down your spine. Power glows in the vastness behind this door. A small incision opens to the left of the door; a keyhole. Now... where is the key?",
-        "exits" : {"south" : "mossy cavern", "north-east" : "Boss Room", "north-west": "Secret Room", "east" : "misty cavern", "west" : "dark cove"}, 
+        "exits" : {"south" : "mossy cavern"}, 
         "items" : [weapons["Iron Sword"], armour["Iron Armour"]], 
         "enemies" : [
             BoneGnashers(10, [BoneGnashers.bone_club_smash], True)
             ], 
-        "item use" : [items["Candle Key"]]
+        "item use" : [items["Candle Key"]],
+        "item used exits" : {"south" : "mossy cavern", "north-east" : "Boss Room"}
     }, 
     "misty cavern" : {
         "description" : "Wispy tendrils of mist weave through the cavern, swallowing light and muffling sound. Each step sinks into unseen depths, sending a shiver up your spine. What lurks within this swirling shroud?", 
-        "exits" : {"south" : "mossy cavern", "east" : "dark passageway"}, 
+        "exits" : {"west" : "mossy cavern", "east" : "dark passageway"}, 
         "items" : [weapons["Iron Sword"], armour["Iron Armour"]], 
         "enemies" : [
             Gloomweavers(12, [Gloomweavers.shadow_lash], True)
@@ -590,18 +592,16 @@ rooms = {
     }, 
     "dark passageway" : {
         "description" : "An unnatural silence hangs in the air, broken only by the soft crunch of your boots on unseen debris. No dripping water, no rustle of unseen creatures, just an oppressive quiet that presses against your ears like a physical weight. You swear you can feel eyes watching from the darkness, unseen and hungry.", 
-        "exits" : {"south" : "misty cavern", "north" : "statue room"}, 
-        "items" : [items["Candle Key"]], 
+        "exits" : {"north" : "misty cavern", "south" : "statue room"}, 
         "item use" : [items["Fire Orb"]], 
-        "item used" : False, 
-        "new exits" : {"south" : "misty cavern", "north" : "statue room", "west" : "Xhoth's Rest"}
+        "item used exits" : {"north" : "misty cavern", "south" : "statue room", "east" : "Xhoth's Rest"}
     }, 
     "Xhoth's Rest" : {
 
     },
     "statue room" : {
         "description" : "The scent of cold stone and ancient dust hangs heavy in the air, a shroud woven from forgotten prayers. Statues, frozen in eternal stillness, line the cavern walls. Marble warriors grip rusted swords, their poses contorted in the throes of battle long past. Regal queens stare with vacant eyes, their gilded crowns mocking the passage of time. Grotesque gargoyles leer from shadowed corners, their stone talons poised to snatch, their silent screams etched in the cracks of weathered wings.", 
-        "exits" : {"south" : "dark passageway"}, 
+        "exits" : {"north" : "dark passageway"}, 
         "items" : [items["Fire Orb"]]
     }
 }
