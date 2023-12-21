@@ -1,5 +1,7 @@
 from random import randint
 from prettytable import PrettyTable
+from textwrap import TextWrapper
+from colorama import Fore, Back, Style
 
 class Inventory_Items: 
     def __init__(self, name, value, quantity=1):
@@ -681,7 +683,7 @@ classes = {
     },
 }
 
-print("Welcome, Foolhardy Soul, to Amoria's Embrace.")
+print(Fore.BLACK,Back.WHITE+"Welcome, Foolhardy Soul, to Amoria's Embrace.")
 
 menu_option = input("Would you like to venture forth? (y/n): ")
 
@@ -693,7 +695,7 @@ elif menu_option == "n":
 else: 
     print("Invalid input! Please select y or n.")
 
-player_name = input("What should Amoria know you as, brave adventurer?: ")
+player_name = input(Fore.RED+"What should Amoria know you as, brave adventurer?: ")
 
 class_menu = PrettyTable(["Class", "Lives", "Gear Score", "Skills"])
 
