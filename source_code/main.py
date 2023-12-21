@@ -86,14 +86,14 @@ class NightWhisperer(Character):
             "armour" : armour["Student Robes"]
         }
         self.skills = {
-            "Firebolt" : {"damage" : 3, "uses" : 4, "description" : "A swirling orb of molten gold, crackling with miniature lightning bursts. The air around it shimmers with heat distortion, exploding on impact."}, 
-            "Freezing Wind" : {"damage": 2, "uses" : 5, "description" : "Encases the target in a biting frost, slowing their movements and draining their warmth. Brittle ice creeps across their skin."}, 
-            "Phantom Feast" : {"damage" : 4, "uses" : 2, "description" : "The target is lured by the ghostly feast, their senses drawn to the illusion of forbidden indulgence. They become sluggish and disoriented, their mind entangled in the phantom delights."}, 
-            "Moonlight Barrage" : {"damage" : 7, "uses" : 1, "description" : "A shower of shimmering blades form, each etched with moonlight and laced with razor-sharp shadows. They tear through the enemy's defenses and leave trails of moonlight wounds."}
+            "Firebolt" : {"damage" : "1d6", "uses" : 6, "description" : "A swirling orb of molten gold, crackling with miniature lightning bursts. The air around it shimmers with heat distortion, exploding on impact."}, 
+            "Freezing Wind" : {"damage": "1d8", "uses" : 5, "description" : "Encases the target in a biting frost, slowing their movements and draining their warmth. Brittle ice creeps across their skin."}, 
+            "Phantom Feast" : {"damage" : "2d6", "uses" : 3, "description" : "The target is lured by the ghostly feast, their senses drawn to the illusion of forbidden indulgence. They become sluggish and disoriented, their mind entangled in the phantom delights."}, 
+            "Moonlight Barrage" : {"damage" : "2d8 + 1d4", "uses" : 1, "description" : "A shower of shimmering blades form, each etched with moonlight and laced with razor-sharp shadows. They tear through the enemy's defenses and leave trails of moonlight wounds."}
             }
     
     def firebolt(self, target):
-        damage = int(3)
+        damage = randint(1, 6)
         if player.skills["Firebolt"]["uses"] > 0:
             print(f"You draw your hand in a swift arc, concentrating darkness into a blazing sphere and hurl towards the enemy with a whispered curse.")
             print(f"Your sphere explodes against {target.name}, dealing {damage} fire damage.")
@@ -103,7 +103,7 @@ class NightWhisperer(Character):
             raise NoUsesLeft
 
     def freezing_wind(self, target):
-        damage = int(2)
+        damage = randint(1, 8)
         if player.skills["Freezing Wind"]["uses"] > 0:
             print("Lips trembling with a whispered frost-spell, a frigid gust rips from your palms. Blades of ice dance toward your enemy within the wind.")
             print(f"Your spell strikes {target.name}, dealing {damage} ice damage.")
@@ -113,7 +113,7 @@ class NightWhisperer(Character):
             raise NoUsesLeft
 
     def phantom_feast(self, target):
-        damage = int(5)
+        damage = randint(1, 6) + randint(1, 6)
         if player.skills["Phantom Feast"]["uses"] > 0:
             print("You weave the shadows into a spectral feast, a low-pitched, hypnotic chant escaping from your lips as you ensnare the target in your illusion.")
             print(f"{target.name} suffers {damage} illusion damage.")
@@ -123,12 +123,12 @@ class NightWhisperer(Character):
             raise NoUsesLeft
 
     def moonlight_barrage(self, target):
-        damage = int(7)
+        damage = randint(1, 8) + randint(1, 8) + randint(1, 4)
         if player.skills["Moonlight Barrage"]["uses"] > 0:
             print("You raise your hand, shadows and moonlight swirling around them to create a storm of uncast shadows.")
             print(f"You unleash a volley of spectral blades, piercing {target.name} for {damage} raw magic damage.")
             target.challenge_rating -= damage
-            player.skills["Thunderstrike"]["uses"] -= 1
+            player.skills["Moonlight Barrage"]["uses"] -= 1
         else: 
             raise NoUsesLeft
 
@@ -143,12 +143,12 @@ class CrimsonBlade(Character):
             "armour" : armour["Chainmail Armour"]
         }
         self.skills = {
-            "Bloodbath Barrage" : {"damage" : 2, "uses" : 8, "description" : "Tear through your enemies with your blade, painting the air with bloody mist."}, 
-            "Crimson Cleaver" : {"damage" : 5, "uses" : 4, "description" : "Produce a shockwave that cracks the ground, flinging your target/s into the air."}
+            "Bloodbath Barrage" : {"damage" : "1d6", "uses" : 8, "description" : "Tear through your enemies with your blade, painting the air with bloody mist."}, 
+            "Crimson Cleaver" : {"damage" : "3d6", "uses" : 4, "description" : "Produce a shockwave that cracks the ground, flinging your target/s into the air."}
         }
 
     def bloodbath_barrage(self, target): 
-        damage = int(2)
+        damage = randint(1, 6)
         if player.skills["Bloodbath Barrage"]["uses"] > 0:
             print("You swiftly unleash your blade, whirling into a crimson-soaked cyclone as you scream towards your enemy.")
             print(f"{target.name} suffers {damage} physical damage.")
@@ -158,7 +158,7 @@ class CrimsonBlade(Character):
             raise NoUsesLeft
 
     def crimson_cleaver(self, target):
-        damage = int(5)
+        damage = randint(1, 6) + randint(1, 6) + randint(1, 6)
         if player.skills["Crimson Cleaver"]["uses"] > 0:
             print("The ground trembles as you slams their weapon into the earth. A crimson shockwave erupts, cracking the ground and sending tremors that ripple outward.")
             print(f"{target.name} fails to escape your shockwave, dealing {damage} physical damage.")
@@ -178,13 +178,13 @@ class SunsHunter(Character):
             "armour" : armour["Leather Armour"]
         }
         self.skills = {
-            "Hymn of Helios" : {"damage" : 2, "uses" : 5, "description" : "Channel the blinding brilliance of the sun, firing a searing arrow leaving smoldering trails in its wake."}, 
-            "Sun's Ire" : {"damage": 4, "uses" : 5, "description" : "Unleash a scorching arrow imbued with solar fury, exploding on impact and dealing heavy damage to a small area."}, 
-            "Hunter's Volley" : {"damage" : 8, "uses" : 1, "description" : "Launch a rapid succession of precise arrows, peppering enemies with a hail of feathers and steel."}
+            "Hymn of Helios" : {"damage" : "1d6 + 1d4", "uses" : 5, "description" : "Channel the blinding brilliance of the sun, firing a searing arrow leaving smoldering trails in its wake."}, 
+            "Sun's Ire" : {"damage": "2d6", "uses" : 4, "description" : "Unleash a scorching arrow imbued with solar fury, exploding on impact and dealing heavy damage to a small area."}, 
+            "Hunter's Volley" : {"damage" : "3d8", "uses" : 1, "description" : "Launch a rapid succession of precise arrows, peppering enemies with a hail of feathers and steel."}
             }
 
     def hymn_of_helios(self, target):
-        damage = int(2)
+        damage = randint(1, 6) + randint(1, 4)
         if player.skills["Hymn of Helios"]["uses"] > 0:
             print(f"As you draw your bow, light gathers around your arrowhead with the fierceness of the sun as you unleash your arrow, chanting the Sun's blessing.")
             print(f"You strike true, dealing {damage} fire damage to {target.name}.")
@@ -193,7 +193,7 @@ class SunsHunter(Character):
         else: 
             raise NoUsesLeft
     def suns_ire(self, target):
-        damage = int(4)
+        damage = randint(1, 6) + randint(1, 6)
         if player.skills["Sun's Ire"]["uses"] > 0:
             print("Gritting your teeth and drawing on the Sun's power, you unleashe a devastating solar projectile towards your target.")
             print(f"Finding your mark, {target.name} suffers {damage} fire damage.")
@@ -203,7 +203,7 @@ class SunsHunter(Character):
             return NoUsesLeft
 
     def hunters_volley(self, target):
-        damage = int(8)
+        damage = randint(1, 8) + randint(1, 8) + randint(1, 8)
         if player.skills["Hunter's Volley"]["uses"] != 0:
             print(f"You unleash a storm of sun-kissed arrows, each shot finding their mark without effort.")
             print(f"{target.name} suffers {damage} ranged damage.")
@@ -226,7 +226,7 @@ class MossHaggardens(Enemy):
         super().__init__("Moss Haggardens", challenge_rating, skills)
         self.swamp_affinity = swamp_affinity
 
-    def acidic_spit(self, target, uses=1):
+    def acidic_spit(self, target, uses=3):
         self.uses = uses
         if uses > 0:
             damage = randint(2, 3)
@@ -234,21 +234,21 @@ class MossHaggardens(Enemy):
             target.temp_gear_score -= damage
             uses -= 1
         elif uses == 0:
-            return
+            return NoUsesLeft
             
 class BoneGnashers(Enemy):
     def __init__(self, challenge_rating, skills, bone_crush_attack=True):
         super().__init__("Bone Gnashers", challenge_rating, skills)
         self.bone_crush_attack = bone_crush_attack
 
-    def bone_club_smash(self, target, uses=1):
+    def bone_club_smash(self, target, uses=3):
         self.uses = uses
         if uses > 0:
             damage = int(2 * randint(1, 2))
             print(f"A bone-tipped club swings down, crushing you for {damage} bludgeoning damage!")
             target.temp_gear_score -= damage
         elif uses == 0:
-            return
+            return NoUsesLeft
 
 class Whisperers(Enemy):
 
@@ -256,14 +256,14 @@ class Whisperers(Enemy):
         super().__init__("Whisperers", challenge_rating, skills)
         self.telepathic_influence = telepathic_influence
 
-    def psychic_blast(self, target, uses=1):
+    def psychic_blast(self, target, uses=3):
         self.uses = uses
         if uses > 0:
-            damage = int(3)
-            print(f"The {self.name}'s mind explodes with force, striking you for {damage} psychic damage!")
-            target.gear_score -= damage
+            damage = randint(2, 3)
+            print(f"The creature's mind explodes with force, striking you for {damage} psychic damage!")
+            target.temp_gear_score -= damage
         elif uses == 0:
-            return
+            return NoUsesLeft
 
 class Gloomweavers(Enemy):
     def __init__(self, challenge_rating, skills, shadow_manipulation=True):
@@ -273,11 +273,11 @@ class Gloomweavers(Enemy):
     def shadow_lash(self, target, uses=2):
         self.uses = uses
         if uses > 0:
-            damage = int(3)
+            damage = randint(2, 3)
             print(f"Whipping tendrils of darkness lash out at you, inflicting {damage} shadow damage!")
             target.temp_gear_score -= damage
         elif uses == 0:
-            return
+            return NoUsesLeft
 
 class Xhoth(Enemy):
     def __init__(self, name="Xhoth", challenge_rating=8, skills=["Consume Essence", "Shadow Tendrils", "Nightmare Visions"]):
@@ -286,25 +286,27 @@ class Xhoth(Enemy):
 
     def consume_essence(self, target):
         # Deal damage and steal life force from the target, healing Xhoth.
-        damage = randint(4, 6)
-        target.gear_score -= damage
+        damage = randint(2, 4)
+        target.temp_gear_score -= damage
         self.challenge_rating += damage // 2
         print(f"Xhoth drains {damage} life force from {target.name}, growing stronger!")
 
-    def shadow_tendrils(self, target):
-        # Restrain the target with shadowy appendages, limiting their movement.
-        if randint(1, 20) >= 15:
-            print(f"Xhoth's shadow tendrils ensnare {target.name}, restricting their movement!")
-        else:
-            print("Xhoth's tendrils lash out but miss!")
+    def shadow_claws(self, target):
+        damage = randint(3, 5)
+        target.temp_gear_score -= damage
+        print(f" Xhoth's shadow extends, forming claw-like appendages that slash at you from multiple angles, dealing {damage} shadow damage.")
 
-    def nightmare_visions(self, target):
-        # Inflict mental anguish on the target, reducing their attack accuracy.
-        if randint(1, 20) >= 12:
-            print(f"Xhoth plunges {target.name} into a nightmare, shaking their resolve!")
-            target.hit_chance -= 10
+    def night_terror(self, target, uses=1):
+        damage = randint(3, 6)
+        if uses > 0:
+            target.temp_gear_score -= damage
+            print(f"Xhoth traps you in a living nightmare, inflicting {damage} shadow damage.")
         else:
-            print("Xhoth's visions flicker harmlessly in {target.name}'s mind.")
+            print(f"Xhoth's visions flicker harmlessly in your mind.")
+            return NoUsesLeft
+
+def boss_Xhoth():
+    pass
 
 def hit_chance(gear_score, challenge_rating): 
     return gear_score + challenge_rating 
@@ -319,8 +321,11 @@ def create_menu():
     return choice
 
 def explore_room():
-    if rooms[current_room]["additional description"]:
+    if "additional description" in rooms[current_room]:
         print(rooms[current_room]["additional description"])
+
+    if current_room is rooms["Boss Room"]:
+        boss_Xhoth()
 
     if "enemies" in rooms[current_room]:
         enemy = rooms[current_room]["enemies"][0] # Assuming single enemy for now
@@ -407,32 +412,43 @@ def attack_list(enemy):
                 print("Invalid entry. Please try again.")
 
 def use_item():
-    print("What item would you like to use?")
-    if isinstance(item, Items):
-        for item in player.inventory:
-            print(f"{item.name}")
-    item_choice = input("> ").lower()
-    match item_choice: 
-        case "candle key":
-            if items["Candle Key"] in rooms[current_room]["item use"]:
-                print("Used 'Candle Key'.")
-                print("You place the key gently in the opening on the door, pushing it outwards until a loud click is heard. The ground beneath you trembles as the door cracks in half, illuminating the room in a crude obsidian light. Fear reaches for you, for your soul, as the light grows brighter. But it's not your fear. It's the fear of the fallen beyond this door. The fear of the defeated, the agony of their loss, washes over you in waves. The stench of dread and despair grows stronger as the crack seeping obsidian all but disintigrates the door, leaving a solid stone archway, paving your fate for better or worse.")
-                rooms[current_room]["item use"].remove(items["Candle Key"])
-                rooms[current_room]["exits"] = rooms[current_room]["item used exits"]
-            else:
-                print("This item cannot be used in this room.")
-                return
-        case "fire orb":
-            if items["Fire Orb"] in rooms[current_room]["item use"]:
-                print("Used 'Fire Orb'.")
-                print("A soft click can be heard, along with the scraping sound of stone shifting and sliding against itself.")
-                rooms[current_room]["item use"].remove(items["Fire Orb"])
-                rooms[current_room]["exits"] = rooms[current_room]["item used exits"]
-            else:
-                print("This item cannot be used in this room.")
-                return
-        case "golden orb":
-            print("This item cannot be used yet.")
+
+    usable_items = [item.name for item in player.inventory if isinstance(item, Items)]
+    if usable_items:
+        print("What item would you like to use?")
+        for item_name in usable_items:
+            print(item_name)
+
+        while True: 
+            item_choice = input("> ").lower()
+            match item_choice: 
+                case "candle key":
+                    if items["Candle Key"] in rooms[current_room]["item use"]:
+                        print("Used 'Candle Key'.")
+                        print("You place the key gently in the opening on the door, pushing it outwards until a loud click is heard. The ground beneath you trembles as the door cracks in half, illuminating the room in a crude obsidian light. Fear reaches for you, for your soul, as the light grows brighter. But it's not your fear. It's the fear of the fallen beyond this door. The fear of the defeated, the agony of their loss, washes over you in waves. The stench of dread and despair grows stronger as the crack seeping obsidian all but disintigrates the door, leaving a solid stone archway, paving your fate for better or worse.")
+                        rooms[current_room]["item use"].remove(items["Candle Key"])
+                        rooms[current_room]["exits"] = rooms[current_room]["item used exits"]
+                        return
+                    else:
+                        print("This item cannot be used in this room.")
+                        return
+                case "fire orb":
+                    if items["Fire Orb"] in rooms[current_room]["item use"]:
+                        print("Used 'Fire Orb'.")
+                        print("A soft click can be heard, along with the scraping sound of stone shifting and sliding against itself.")
+                        rooms[current_room]["item use"].remove(items["Fire Orb"])
+                        rooms[current_room]["exits"] = rooms[current_room]["item used exits"]
+                        return
+                    else:
+                        print("This item cannot be used in this room.")
+                        return
+                case "golden sphere":
+                    print("This item cannot be used yet.")
+                    return
+                case _:
+                    print("Please select one of the available items to use.")
+    else: 
+        print("You currently have no items available for use.")
 
 def manage_inventory():
     while True: 
@@ -444,19 +460,31 @@ def manage_inventory():
         for slot, item in player.equipment.items():
             print(f"{slot.capitalize()}: {item.name}")
 
-        choice = input("\nChoose an item to equip (enter 'q' to quit) or 'u' to unequip: ")
-        if choice == "q":
-            break
+        print("\nChoose an action:")
+        print("1. Equip an item.")
+        print("2. Unequip an item.")
+        print("3. Use an item.")
+        print("4. Quit.")
 
-        try: 
-            if choice == "u":
-                unequip_item()
-            else: 
-                item_index = int(choice) - 1
-                item = player.inventory[item_index]
-                equip_item(item)
-        except (ValueError, IndexError):
-            print("Invalid Choice. Please enter a valid item number or 'q' to quit.")
+        choice = input("> ")
+
+        if choice == "1": 
+            while True:
+                try: 
+                    item_index = int(input("Enter the number of the item you want to equip: ")) - 1
+                    item = player.inventory[item_index]
+                    equip_item(item)
+                    break
+                except (ValueError, IndexError):
+                    print("Invalid Choice. Please enter a valid item number.")
+        elif choice == "2":
+            unequip_item()
+        elif choice == "3":
+            use_item()
+        elif choice == "4":
+            break
+        else: 
+            print("Invalid choice. Please enter a number between 1 and 4.")
 
 def unequip_item(item):
     slot = input("Choose a slot to unequip: ")
@@ -573,7 +601,7 @@ rooms = {
         "exits" : {"south" : "passage", "north" : "candle-lit room", "east" : "misty cavern", "west" : "dark cove"}, 
         "items" : [armour["Studded Leather Armour"]], 
         "enemies" : [
-            MossHaggardens(6, [MossHaggardens.acidic_spit], True)
+            MossHaggardens(8, [MossHaggardens.acidic_spit], True)
             ]
     }, 
     "candle-lit room" : {
@@ -614,7 +642,7 @@ rooms = {
         "exits" : {"west" : "dark passageway"},
         "items" : {armour["Silk Robes"], items["Candle Key"]},
         "enemies" : [
-            Whisperers(12, [Whisperers.psychic_blast], True)
+            Whisperers(15, [Whisperers.psychic_blast], True)
         ]
     },
     "statue room" : {
@@ -622,13 +650,13 @@ rooms = {
         "exits" : {"north" : "dark passageway"}, 
         "items" : [items["Fire Orb"], weapons["Elm Staff"]],
         "enemies" : [
-            Gloomweavers(12, [Gloomweavers.shadow_lash], True)
+            Gloomweavers(14, [Gloomweavers.shadow_lash], True)
         ]
     },
     "Boss Room" : {
         "description" : "Blind step. Cold stone. Candlelight flickers, painting the darkness with shapes that shift and leer. A throne sits crooked, a bone crown atop its skull-grin back, with Xhoth perched upon it. This, this is Xhoth's pathetic stand. His own bone crown askew, he resembles a spider in a crumbling web. Candlelight dances on his carapace, glinting off obsidian teeth in a grin that chills the air. He's all angles and shadows, a puppet king in a kingdom of dust. Ready? Or will you walk over his ashes and claim the deeper dread?",
         "boss" : [
-            Xhoth(15, [Xhoth.consume_essence, Xhoth.nightmare_visions, Xhoth.shadow_tendrils], True)
+            Xhoth(20, [Xhoth.consume_essence, Xhoth.night_terror, Xhoth.shadow_claws], True)
         ]
     }
 }
