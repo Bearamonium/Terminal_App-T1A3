@@ -1,7 +1,8 @@
 from random import randint
 from prettytable import PrettyTable
-from textwrap import TextWrapper
+import textwrap
 from colorama import Fore, Back, Style
+import re
 
 class Inventory_Items: 
     def __init__(self, name, value, quantity=1):
@@ -314,17 +315,19 @@ def hit_chance(gear_score, challenge_rating):
     return gear_score + challenge_rating 
 
 def create_menu():
+    print(Fore.BLUE)
     print("What do you want to do?")
     print("[1] Explore the area")
     print("[2] Use an item")
     print("[3] Open Inventory")
     print("[4] Move")
+    print(Style.RESET_ALL)
     choice = input("> ")
     return choice
 
 def explore_room():
     if "additional description" in rooms[current_room]:
-        print(rooms[current_room]["additional description"])
+        print(text_wrapper.fill(rooms[current_room]["additional description"]))
 
     if current_room is rooms["Boss Room"]:
         boss_Xhoth()
@@ -683,7 +686,12 @@ classes = {
     },
 }
 
-print(Fore.BLACK,Back.WHITE+"Welcome, Foolhardy Soul, to Amoria's Embrace.")
+text_wrapper = textwrap.TextWrapper(width=150,
+                                    initial_indent="    ",
+                                    subsequent_indent="    ",
+                                    replace_whitespace=False)
+
+print("Welcome, Foolhardy Soul, to Amoria's Embrace.")
 
 menu_option = input("Would you like to venture forth? (y/n): ")
 
@@ -695,14 +703,18 @@ elif menu_option == "n":
 else: 
     print("Invalid input! Please select y or n.")
 
-player_name = input(Fore.RED+"What should Amoria know you as, brave adventurer?: ")
+player_name = input(Fore.RED+"What should Amoria know you as, brave adventurer?: "+Fore.RESET)
 
-class_menu = PrettyTable(["Class", "Lives", "Gear Score", "Skills"])
+class_menu = PrettyTable([Fore.BLUE + Style.BRIGHT + "Class", Fore.YELLOW + "Lives", Fore.CYAN + "Gear Score", Fore.MAGENTA + "Skills"])
 
 for class_name, class_data in classes.items():
-    class_menu.add_row([class_name, class_data["lives"], class_data["gear_score"](), class_data["skills"]])
+    class_menu.add_row([
+        Fore.BLUE + class_name, 
+        Fore.YELLOW + str(class_data["lives"]), 
+        Fore.CYAN + str(class_data["gear_score"]()), 
+        Fore.MAGENTA + class_data["skills"]])
 
-print(class_menu)
+print(class_menu, Style.RESET_ALL)
 
 class_choice = input(f"{player_name}, please choose your starting class (Crimson Blade, Sun's Hunter, Night Whisperer) to begin your descent into Amoria: ").lower()
 
@@ -718,10 +730,20 @@ elif class_choice == "sun's hunter":
 elif class_choice == "night whisperer":
     player = NightWhisperer()
 
-print("The ground beneath your feet shivers with a thousand echoing screams. You stand at the precipice of Amoria, where shadows writhe and madness whispers promises in the wind. This is no mere dungeon, adventurer, but a festering wound upon the world, a gateway to horrors beyond mortal comprehension. \n\nHere, hope withers faster than flowers in winter, and courage curdles under the gaze of things best left unseen. Within these obsidian walls, time bends and twists, sanity unravels like silk in a storm, and death is but a prelude to something far worse.\n\nBut you, it seems, possess a curiosity as sharp as a shard of oblivion. Perhaps you seek forbidden knowledge, or treasures worth kingdoms? Or do you walk a different path, one that will find you face to face with T'halth, the crusader of madness that lurks beneath your feet? Whatever reasoning, we welcome you with open arms to Amoria.\n\nMay your steps be swift, and your soul, if you have one left, remain your own until your inevitable, echoing end.")
+print(Style.BRIGHT + text_wrapper.fill(
+    re.sub(r"\s+", " ", textwrap.dedent("""
+    The ground beneath your feet shivers with a thousand echoing screams. You stand at the precipice of Amoria, where shadows writhe and madness whispers promises in the wind. This is no mere dungeon, adventurer, but a festering wound upon the world, a gateway to horrors beyond mortal comprehension.\n
+
+    Here, hope withers faster than flowers in winter, and courage curdles under the gaze of things best left unseen. Within these obsidian walls, time bends and twists, sanity unravels like silk in a storm, and death is but a prelude to something far worse.
+
+    But it seems that you possess a curiosity as sharp as a shard of oblivion. Perhaps you seek forbidden knowledge, or treasures worth kingdoms? Or do you walk a different path, one that will find you face to face with T'halth, the crusader of madness that lurks beneath your feet? Whatever reasoning, we welcome you with open arms to Amoria. 
+
+    May your steps be swift, and your soul, if you have one left, remain your own until your inevitable, echoing end.
+    """).strip())
+))
 
 while True: 
-    print(rooms[current_room]["description"])
+    print(Fore.GREEN + text_wrapper.fill(rooms[current_room]["description"]))
 
     while True:
         users_choice = create_menu()
