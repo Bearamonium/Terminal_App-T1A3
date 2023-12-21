@@ -366,11 +366,11 @@ def attack_list(enemy):
         match attack_choice:
             case "firebolt":
                 if "Firebolt" in player.skills:
-                    player.Firebolt(enemy)
+                    player.firebolt(enemy)
                     break
             case "freezing wind":
                 if "Freezing Wind" in player.skills:
-                    player.Freezing_Wind(enemy)
+                    player.freezing_wind(enemy)
                     break
             case "phantom feast":
                 if "Phantom Feast" in player.skills:
@@ -380,13 +380,13 @@ def attack_list(enemy):
                 if "Moonlight Barrage" in player.skills:  
                     player.moonlight_barrage(enemy)
                     break
-            case "upwards slash":
-                if "Upwards Slash" in player.skills:
-                    player.Upwards_Slash(enemy)
+            case "bloodbath barrage":
+                if "Bloodbath Barrage" in player.skills:
+                    player.bloodbath_barrage(enemy)
                     break
-            case "ground smash":
-                if "Ground Smash" in player.skills: 
-                    player.ground_smash(enemy)
+            case "crimson cleaver":
+                if "Crimson Cleaver" in player.skills: 
+                    player.crimson_cleaver(enemy)
                     break
             case "hymn of helios":
                 if "Hymn of Helios" in player.skills:
@@ -416,7 +416,7 @@ def use_item():
         case "candle key":
             if items["Candle Key"] in rooms[current_room]["item use"]:
                 print("Used 'Candle Key'.")
-                print("You place the key gently in the opening on the door, pushing it outwards until a loud click is heard. The ground beneath you trembles as the door cracks in half, illuminating the room in a crude obsidian light. Fear reaches for you, for your soul, as the light grows brighter. But it's not your fear. It's the fear of the fallen beyond this door. The fear of the defeated, the agony of their loss, washes over you in waves. ")
+                print("You place the key gently in the opening on the door, pushing it outwards until a loud click is heard. The ground beneath you trembles as the door cracks in half, illuminating the room in a crude obsidian light. Fear reaches for you, for your soul, as the light grows brighter. But it's not your fear. It's the fear of the fallen beyond this door. The fear of the defeated, the agony of their loss, washes over you in waves. The stench of dread and despair grows stronger as the crack seeping obsidian all but disintigrates the door, leaving a solid stone archway, paving your fate for better or worse.")
                 rooms[current_room]["item use"].remove(items["Candle Key"])
                 rooms[current_room]["exits"] = rooms[current_room]["item used exits"]
             else:
@@ -425,6 +425,7 @@ def use_item():
         case "fire orb":
             if items["Fire Orb"] in rooms[current_room]["item use"]:
                 print("Used 'Fire Orb'.")
+                print("A soft click can be heard, along with the scraping sound of stone shifting and sliding against itself.")
                 rooms[current_room]["item use"].remove(items["Fire Orb"])
                 rooms[current_room]["exits"] = rooms[current_room]["item used exits"]
             else:
@@ -564,7 +565,7 @@ rooms = {
     "passage" : {
         "description" : "A single, skeletal bridge spans the chasm, its bones bleached white. With a tentative step, the aged-decayed wood groans in protest under your feet. A quick glance into the abyss below, shadows writhe with unseen eyes glinting like poisoned emeralds.", 
         "additional description" : "As you look around, a sense of unease washes over you in full force. You can see the slight emerald tinge of moss coming creeping out of the opening on the other side of the bridge.",
-        "exits" : {"south" : "entrance", "north" : "mossy cavern"}
+        "exits" : {"south" : "entrance", "north" : "mossy room"}
     }, 
     "mossy room" : {
         "description" : "The room you enter coils in on itself, walls draped in emerald moss. The eerie silence of your surroundings is only broken by the what seems to be the slight groan of a tree trunk bending to the wind... Wind?.", 
@@ -578,17 +579,17 @@ rooms = {
     "candle-lit room" : {
         "description" : "A lone flame pierces the gloom, casting long, skeletal shadows that twist and writhe on the floor. The scent of burning wax bleeds into the metallic tang of anticipation, a bitter cocktail in the quiet before the storm.", 
         "additional description" : "Two doors glean against the flickering light; a little one to your front on the left, and a larger, ornate door carved of wooden and latice to your right. Trying the door on your left, it is stuck steadfast, no amount of force will open it. Walking up to the other door, a shiver runs down your spine. Power glows in the vastness beyond. A small incision opens to the left of the door; a keyhole. Now... where is the key?",
-        "exits" : {"south" : "mossy cavern"}, 
+        "exits" : {"south" : "mossy room"}, 
         "items" : [weapons["Iron Sword"]], 
         "enemies" : [
             BoneGnashers(10, [BoneGnashers.bone_club_smash], True)
             ], 
         "item use" : [items["Candle Key"]],
-        "item used exits" : {"south" : "mossy cavern", "north-east" : "Boss Room"}
+        "item used exits" : {"south" : "mossy room", "north-east" : "Boss Room"}
     }, 
     "misty cavern" : {
         "description" : "Wispy tendrils of mist weave through the cavern, swallowing light and muffling sound. Each step sinks into unseen depths, sending a shiver up your spine. What lurks within this swirling shroud?", 
-        "exits" : {"west" : "mossy cavern", "east" : "dark passageway"}, 
+        "exits" : {"west" : "mossy room", "east" : "dark passageway"}, 
         "enemies" : [
             Gloomweavers(10, [Gloomweavers.shadow_lash], True)
         ]
@@ -611,7 +612,7 @@ rooms = {
     "Xhoth's Rest" : {
         "description" : "Darkness envelops you as you step inside, only broken by the gleaming visage of a... candle, flickering in the center of the room. Shadows cast appear to move against the sharp dance of the flame, mockingly inviting you to continue stepping foward.", 
         "exits" : {"west" : "dark passageway"},
-        "items" : {armour["Silk Robes"], [items["Candle Key"]]},
+        "items" : {armour["Silk Robes"], items["Candle Key"]},
         "enemies" : [
             Whisperers(12, [Whisperers.psychic_blast], True)
         ]
