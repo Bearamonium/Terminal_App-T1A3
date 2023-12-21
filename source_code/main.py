@@ -86,25 +86,27 @@ class NightWhisperer(Character):
             "armour" : armour["Student Robes"]
         }
         self.skills = {
-            "Firebolt" : {"damage" : 3, "uses" : 4, "description" : "Channel the blinding brilliance of the sun, firing a searing arrow leaving smoldering trails in its wake."}, 
-            "Freezing Wind" : {"damage": 2, "uses" : 5, "description" : "Unleash a scorching arrow imbued with solar fury, exploding on impact and dealing heavy damage to a small area."}, 
-            "Phantom Feast" : {"damage" : 5, "uses" : 2, "description" : "Channel the illusions of the veil and bring forth spectral hounds to attack your enemy."}, 
-            "Moonlight Barrage" : {"damage" : 7, "uses" : 1, "description" : "Draw upon the lunar aspects and unleash a volley of condensed moonlight shards at the enemy."}
+            "Firebolt" : {"damage" : 3, "uses" : 4, "description" : "A swirling orb of molten gold, crackling with miniature lightning bursts. The air around it shimmers with heat distortion, exploding on impact."}, 
+            "Freezing Wind" : {"damage": 2, "uses" : 5, "description" : "Encases the target in a biting frost, slowing their movements and draining their warmth. Brittle ice creeps across their skin."}, 
+            "Phantom Feast" : {"damage" : 4, "uses" : 2, "description" : "The target is lured by the ghostly feast, their senses drawn to the illusion of forbidden indulgence. They become sluggish and disoriented, their mind entangled in the phantom delights."}, 
+            "Moonlight Barrage" : {"damage" : 7, "uses" : 1, "description" : "A shower of shimmering blades form, each etched with moonlight and laced with razor-sharp shadows. They tear through the enemy's defenses and leave trails of moonlight wounds."}
             }
     
-    def Firebolt(self, target):
+    def firebolt(self, target):
         damage = int(3)
         if player.skills["Firebolt"]["uses"] > 0:
-            print(f"A searing bolt of flame scorches {target.name} for {damage} fire damage!")
+            print(f"You draw your hand in a swift arc, concentrating darkness into a blazing sphere and hurl towards the enemy with a whispered curse.")
+            print(f"Your sphere explodes against {target.name}, dealing {damage} fire damage.")
             target.challenge_rating -= damage
             player.skills["Firebolt"]["uses"] -= 1
         else: 
             raise NoUsesLeft
 
-    def Freezing_Wind(self, target):
+    def freezing_wind(self, target):
         damage = int(2)
         if player.skills["Freezing Wind"]["uses"] > 0:
-            print(f"A frigid gale whips towards {target.name}, dealing {damage} ice damage.")
+            print("Lips trembling with a whispered frost-spell, a frigid gust rips from your palms. Blades of ice dance toward your enemy within the wind.")
+            print(f"Your spell strikes {target.name}, dealing {damage} ice damage.")
             target.challenge_rating -= damage
             player.skills["Freezing Wind"]["uses"] -= 1
         else: 
@@ -113,7 +115,8 @@ class NightWhisperer(Character):
     def phantom_feast(self, target):
         damage = int(5)
         if player.skills["Phantom Feast"]["uses"] > 0:
-            print(f"The hounds savagely tear at {target.name} for {damage} illusion damage!")
+            print("You weave the shadows into a spectral feast, a low-pitched, hypnotic chant escaping from your lips as you ensnare the target in your illusion.")
+            print(f"{target.name} suffers {damage} illusion damage.")
             target.challenge_rating -= damage
             player.skills["Phantom Feast"]["uses"] -= 1
         else: 
@@ -122,7 +125,8 @@ class NightWhisperer(Character):
     def moonlight_barrage(self, target):
         damage = int(7)
         if player.skills["Moonlight Barrage"]["uses"] > 0:
-            print(f"You unleash a volley of silvery shards, piercing {target.name} for {damage} raw magic damage!")
+            print("You raise your hand, shadows and moonlight swirling around them to create a storm of uncast shadows.")
+            print(f"You unleash a volley of spectral blades, piercing {target.name} for {damage} raw magic damage.")
             target.challenge_rating -= damage
             player.skills["Thunderstrike"]["uses"] -= 1
         else: 
@@ -139,27 +143,27 @@ class CrimsonBlade(Character):
             "armour" : armour["Chainmail Armour"]
         }
         self.skills = {
-            "Upwards Slash" : {"damage" : 2, "uses" : 8}, 
-            "Ground Smash" : {"damage" : 5, "uses" : 4}
+            "Bloodbath Barrage" : {"damage" : 2, "uses" : 8, "description" : "Tear through your enemies with your blade, painting the air with bloody mist."}, 
+            "Crimson Cleaver" : {"damage" : 5, "uses" : 4, "description" : "Produce a shockwave that cracks the ground, flinging your target/s into the air."}
         }
 
-    def Upwards_Slash(self, target): 
-        self.uses = 10
+    def bloodbath_barrage(self, target): 
         damage = int(2)
-        if player.skills["Upwards Slash"]["uses"] > 0:
-            print(f"{player_name} swiftly unleashes their sword in an upwards arc, dealing {damage} physical damage!.")
+        if player.skills["Bloodbath Barrage"]["uses"] > 0:
+            print("You swiftly unleash your blade, whirling into a crimson-soaked cyclone as you scream towards your enemy.")
+            print(f"{target.name} suffers {damage} physical damage.")
             target.challenge_rating -= damage
-            player.skills["Upwards Slash"]["uses"] -= 1
+            player.skills["Bloodbath Barrage"]["uses"] -= 1
         else: 
             raise NoUsesLeft
 
-    def ground_smash(self, target):
-        self.uses = 5
+    def crimson_cleaver(self, target):
         damage = int(5)
-        if player.skills["Ground Smash"]["uses"] > 0:
-            print(f"{player_name} smashes downwards with the blade, causing the ground to quake and dealing {damage} physical damage!")
+        if player.skills["Crimson Cleaver"]["uses"] > 0:
+            print("The ground trembles as you slams their weapon into the earth. A crimson shockwave erupts, cracking the ground and sending tremors that ripple outward.")
+            print(f"{target.name} fails to escape your shockwave, dealing {damage} physical damage.")
             target.challenge_rating -=damage
-            player.skills["Ground Smash"]["uses"] -= 1
+            player.skills["Crimson Cleaver"]["uses"] -= 1
         else: 
             raise NoUsesLeft
 
@@ -174,38 +178,35 @@ class SunsHunter(Character):
             "armour" : armour["Leather Armour"]
         }
         self.skills = {
-            "Hymn of Helios" : {"damage" : 2, "uses" : 1, "description" : "Channel the blinding brilliance of the sun, firing a searing arrow leaving smoldering trails in its wake."}, 
-            "Sun's Ire" : {"damage": 4, "uses" : 3, "description" : "Unleash a scorching arrow imbued with solar fury, exploding on impact and dealing heavy damage to a small area."}, 
-            "Hunter's Volley" : {"damage" : 8, "uses" : 0, "description" : "Launch a rapid succession of precise arrows, peppering enemies with a hail of feathers and steel."}
+            "Hymn of Helios" : {"damage" : 2, "uses" : 5, "description" : "Channel the blinding brilliance of the sun, firing a searing arrow leaving smoldering trails in its wake."}, 
+            "Sun's Ire" : {"damage": 4, "uses" : 5, "description" : "Unleash a scorching arrow imbued with solar fury, exploding on impact and dealing heavy damage to a small area."}, 
+            "Hunter's Volley" : {"damage" : 8, "uses" : 1, "description" : "Launch a rapid succession of precise arrows, peppering enemies with a hail of feathers and steel."}
             }
 
     def hymn_of_helios(self, target):
-        self.uses = 6
         damage = int(2)
         if player.skills["Hymn of Helios"]["uses"] > 0:
-            print(f"Silver whispers guide my string, sun's fury sings in every flight. Aim true, mortals, or face Apollo's light!")
-            print(f"{damage} damage.")
+            print(f"As you draw your bow, light gathers around your arrowhead with the fierceness of the sun as you unleash your arrow, chanting the Sun's blessing.")
+            print(f"You strike true, dealing {damage} fire damage to {target.name}.")
             target.challenge_rating -= damage
             player.skills["Hymn of Helios"]["uses"] -= 1
         else: 
             raise NoUsesLeft
     def suns_ire(self, target):
-        self.uses = 3
         damage = int(4)
         if player.skills["Sun's Ire"]["uses"] > 0:
-            print(f"Silver whispers guide my string, sun's fury sings in every flight. Aim true, mortals, or face Apollo's light!")
-            print(f"{damage} damage.")
+            print("Gritting your teeth and drawing on the Sun's power, you unleashe a devastating solar projectile towards your target.")
+            print(f"Finding your mark, {target.name} suffers {damage} fire damage.")
             target.challenge_rating -= damage
             player.skills["Sun's Ire"]["uses"] -= 1
         else: 
             return NoUsesLeft
 
     def hunters_volley(self, target):
-        self.uses = 0
         damage = int(8)
         if player.skills["Hunter's Volley"]["uses"] != 0:
-            print(f"Silver whispers guide my string, sun's fury sings in every flight. Aim true, mortals, or face Apollo's light!")
-            print(f"{damage} damage.")
+            print(f"You unleash a storm of sun-kissed arrows, each shot finding their mark without effort.")
+            print(f"{target.name} suffers {damage} ranged damage.")
             target.challenge_rating -= damage
             player.skills["Hunter's Volley"]["uses"] -= 1
         else: 
@@ -228,7 +229,7 @@ class MossHaggardens(Enemy):
     def acidic_spit(self, target, uses=1):
         self.uses = uses
         if uses > 0:
-            damage = randint(2, 4)
+            damage = randint(2, 3)
             print(f"A glob of acidic spit corrodes you for {damage} acid damage!")
             target.temp_gear_score -= damage
             uses -= 1
@@ -259,7 +260,7 @@ class Whisperers(Enemy):
         self.uses = uses
         if uses > 0:
             damage = int(3)
-            print(f"{self.name}'s mind explodes with force, striking you for {damage} psychic damage!")
+            print(f"The {self.name}'s mind explodes with force, striking you for {damage} psychic damage!")
             target.gear_score -= damage
         elif uses == 0:
             return
@@ -319,7 +320,7 @@ def create_menu():
 
 def explore_room():
     if rooms[current_room]["additional description"]:
-                print(rooms[current_room]["additional description"])
+        print(rooms[current_room]["additional description"])
 
     if "enemies" in rooms[current_room]:
         enemy = rooms[current_room]["enemies"][0] # Assuming single enemy for now
@@ -415,6 +416,7 @@ def use_item():
         case "candle key":
             if items["Candle Key"] in rooms[current_room]["item use"]:
                 print("Used 'Candle Key'.")
+                print("You place the key gently in the opening on the door, pushing it outwards until a loud click is heard. The ground beneath you trembles as the door cracks in half, illuminating the room in a crude obsidian light. Fear reaches for you, for your soul, as the light grows brighter. But it's not your fear. It's the fear of the fallen beyond this door. The fear of the defeated, the agony of their loss, washes over you in waves. ")
                 rooms[current_room]["item use"].remove(items["Candle Key"])
                 rooms[current_room]["exits"] = rooms[current_room]["item used exits"]
             else:
@@ -428,6 +430,8 @@ def use_item():
             else:
                 print("This item cannot be used in this room.")
                 return
+        case "golden orb":
+            print("This item cannot be used yet.")
 
 def manage_inventory():
     while True: 
@@ -553,29 +557,29 @@ def flee_failed(enemy):
 
 rooms = {
     "entrance" : {
-        "description" : "Amoria's maw gapes, a silent scream carved in stone. Moss, like venomous veins, crawls across the shattered stone entrance. Silence hangs heavy, broken only by dripping.. something, each drop a chilling knell. Dare you enter?",
-        "additional description" : "A prickle of unease tingles along your neck. Beyond the entrance, shadows twist and dance, obscuring the grisly tableau of broken wood and broken lives",
+        "description" : "Amoria's maw gapes, a silent scream carved in stone. Moss, like venomous veins, crawls across the shattered stone entrance. Silence hangs heavy, broken only by dripping.. something, each drop a chilling knell.",
+        "additional description" : "Beyond the entrance, shadows twist and dance as they call upon you to enter the depths of Amoria.",
         "exits" : {"north" : "passage"}
     }, 
     "passage" : {
-        "description" : "A single, skeletal bridge spans the chasm, its bones bleached white, each step a tick against eternity. Below, shadows writhe, unseen eyes glint like poisoned emeralds dancing to the beat of your racing heart.", 
+        "description" : "A single, skeletal bridge spans the chasm, its bones bleached white. With a tentative step, the aged-decayed wood groans in protest under your feet. A quick glance into the abyss below, shadows writhe with unseen eyes glinting like poisoned emeralds.", 
         "additional description" : "As you look around, a sense of unease washes over you in full force. You can see the slight emerald tinge of moss coming creeping out of the opening on the other side of the bridge.",
         "exits" : {"south" : "entrance", "north" : "mossy cavern"}
     }, 
-    "mossy cavern" : {
-        "description" : "A hushed eye of emerald moss, this cave coils on itself, walls draped in velvet silence. Sunlight bleeds through unseen cracks, staining stone with jade and shadow. The air hangs heavy with damp perfume, whispering promises of secrets and slumbering things.", 
-        "additional description" : "Your bare skin tingles, chilled by the velvet touch of silence that drapes the cave. Emerald moss whispers underfoot, and sunlight bleeds through unseen veins, casting jade shadows that dance on the cavern walls. The air, thick with damp perfume, tickles your nostrils, urging you to inhale its secrets.",
+    "mossy room" : {
+        "description" : "The room you enter coils in on itself, walls draped in emerald moss. The eerie silence of your surroundings is only broken by the what seems to be the slight groan of a tree trunk bending to the wind... Wind?.", 
+        "additional description" : "The emerald moss begins to whisper under your feet as you bravely fenture further into the room, sunlight bleeding through the slim cracks in the ceiling, casting a dance of shadows around the room. The air, thick with the damp perfume of earth, tickles your nostrils.",
         "exits" : {"south" : "passage", "north" : "candle-lit room", "east" : "misty cavern", "west" : "dark cove"}, 
-        "items" : [weapons["Iron Sword"], armour["Iron Armour"]], 
+        "items" : [armour["Studded Leather Armour"]], 
         "enemies" : [
-            MossHaggardens(8, [MossHaggardens.acidic_spit], True)
+            MossHaggardens(6, [MossHaggardens.acidic_spit], True)
             ]
     }, 
     "candle-lit room" : {
         "description" : "A lone flame pierces the gloom, casting long, skeletal shadows that twist and writhe on the floor. The scent of burning wax bleeds into the metallic tang of anticipation, a bitter cocktail in the quiet before the storm.", 
-        "additional description" : "Two doors glean against the flickering light; a little one to your front on the left, and a larger, ornate door carved of wooden and latice to your right. Trying the door on your left, it is stuck steadfast, no amount of force will open it. Walking up to the other door, a shiver runs down your spine. Power glows in the vastness behind this door. A small incision opens to the left of the door; a keyhole. Now... where is the key?",
+        "additional description" : "Two doors glean against the flickering light; a little one to your front on the left, and a larger, ornate door carved of wooden and latice to your right. Trying the door on your left, it is stuck steadfast, no amount of force will open it. Walking up to the other door, a shiver runs down your spine. Power glows in the vastness beyond. A small incision opens to the left of the door; a keyhole. Now... where is the key?",
         "exits" : {"south" : "mossy cavern"}, 
-        "items" : [weapons["Iron Sword"], armour["Iron Armour"]], 
+        "items" : [weapons["Iron Sword"]], 
         "enemies" : [
             BoneGnashers(10, [BoneGnashers.bone_club_smash], True)
             ], 
@@ -585,24 +589,46 @@ rooms = {
     "misty cavern" : {
         "description" : "Wispy tendrils of mist weave through the cavern, swallowing light and muffling sound. Each step sinks into unseen depths, sending a shiver up your spine. What lurks within this swirling shroud?", 
         "exits" : {"west" : "mossy cavern", "east" : "dark passageway"}, 
-        "items" : [weapons["Iron Sword"], armour["Iron Armour"]], 
         "enemies" : [
-            Gloomweavers(12, [Gloomweavers.shadow_lash], True)
+            Gloomweavers(10, [Gloomweavers.shadow_lash], True)
         ]
     }, 
+    "dark cove" : {
+        "description" : "On first glance, nothing sets the space apart from a regular cave, until you lay eyes on the shrine located in the dead center. The shrine pulses with an unnatural luminescence, emanating from moss-coated runes etched into its obsidian surface. Shadows swirl around it's edges, paired with an unsettling hum resonating through the air that vibrates your bones with each pulse of the shrine's mysterious glow. This is no ordinary cave.",
+        "additional description" : "Whispers, thin as frost, slither through the air, twisting your name with malice. You can't discern their source, but they prickle your skin with the promise of unseen danger.",
+        "exits" : {"east" : "mossy room"},
+        "items" : [weapons["Elm Short Bow"], items["Golden Sphere"]],
+        "enemies" : [
+            Whisperers(10, [Whisperers.psychic_blast], True)
+        ]
+    },
     "dark passageway" : {
-        "description" : "An unnatural silence hangs in the air, broken only by the soft crunch of your boots on unseen debris. No dripping water, no rustle of unseen creatures, just an oppressive quiet that presses against your ears like a physical weight. You swear you can feel eyes watching from the darkness, unseen and hungry.", 
+        "description" : "An unnatural silence hangs in the air, broken only by the soft crunch of your boots on unseen debris. No dripping water, no rustle of unseen creatures, just an oppressive quiet that presses against your ears like a physical weight. You swear you can feel eyes watching from the darkness, unseen and hungry, but see nothing. What lurks within these walls?", 
         "exits" : {"north" : "misty cavern", "south" : "statue room"}, 
-        "item use" : [items["Fire Orb"]], 
+        "item use" : [items["Fire Orb"]],
         "item used exits" : {"north" : "misty cavern", "south" : "statue room", "east" : "Xhoth's Rest"}
     }, 
     "Xhoth's Rest" : {
-
+        "description" : "Darkness envelops you as you step inside, only broken by the gleaming visage of a... candle, flickering in the center of the room. Shadows cast appear to move against the sharp dance of the flame, mockingly inviting you to continue stepping foward.", 
+        "exits" : {"west" : "dark passageway"},
+        "items" : {armour["Silk Robes"], [items["Candle Key"]]},
+        "enemies" : [
+            Whisperers(12, [Whisperers.psychic_blast], True)
+        ]
     },
     "statue room" : {
         "description" : "The scent of cold stone and ancient dust hangs heavy in the air, a shroud woven from forgotten prayers. Statues, frozen in eternal stillness, line the cavern walls. Marble warriors grip rusted swords, their poses contorted in the throes of battle long past. Regal queens stare with vacant eyes, their gilded crowns mocking the passage of time. Grotesque gargoyles leer from shadowed corners, their stone talons poised to snatch, their silent screams etched in the cracks of weathered wings.", 
         "exits" : {"north" : "dark passageway"}, 
-        "items" : [items["Fire Orb"]]
+        "items" : [items["Fire Orb"], weapons["Elm Staff"]],
+        "enemies" : [
+            Gloomweavers(12, [Gloomweavers.shadow_lash], True)
+        ]
+    },
+    "Boss Room" : {
+        "description" : "Blind step. Cold stone. Candlelight flickers, painting the darkness with shapes that shift and leer. A throne sits crooked, a bone crown atop its skull-grin back, with Xhoth perched upon it. This, this is Xhoth's pathetic stand. His own bone crown askew, he resembles a spider in a crumbling web. Candlelight dances on his carapace, glinting off obsidian teeth in a grin that chills the air. He's all angles and shadows, a puppet king in a kingdom of dust. Ready? Or will you walk over his ashes and claim the deeper dread?",
+        "boss" : [
+            Xhoth(15, [Xhoth.consume_essence, Xhoth.nightmare_visions, Xhoth.shadow_tendrils], True)
+        ]
     }
 }
 
@@ -661,7 +687,7 @@ elif class_choice == "sun's hunter":
 elif class_choice == "night whisperer":
     player = NightWhisperer()
 
-print("The ground beneath your feet shivers with a thousand echoing screams. You stand at the precipice of Amoria, where shadows writhe and madness whispers promises in the wind. This is no mere dungeon, adventurer, but a festering wound upon the world, a gateway to horrors beyond mortal comprehension. \n\nHere, hope withers faster than flowers in winter, and courage curdles under the gaze of things best left unseen. Within these obsidian walls, time bends and twists, sanity unravels like silk in a storm, and death is but a prelude to something far worse.\n\nBut you, it seems, possess a curiosity as sharp as a shard of oblivion. Perhaps you seek forbidden knowledge, or treasures worth kingdoms, or simply the thrill of defying the abyss. Whatever your madness, welcome to Amoria.\n\nMay your steps be swift, your blade ever sharp, and your soul, if you have one left, remain your own until the inevitable, echoing end.")
+print("The ground beneath your feet shivers with a thousand echoing screams. You stand at the precipice of Amoria, where shadows writhe and madness whispers promises in the wind. This is no mere dungeon, adventurer, but a festering wound upon the world, a gateway to horrors beyond mortal comprehension. \n\nHere, hope withers faster than flowers in winter, and courage curdles under the gaze of things best left unseen. Within these obsidian walls, time bends and twists, sanity unravels like silk in a storm, and death is but a prelude to something far worse.\n\nBut you, it seems, possess a curiosity as sharp as a shard of oblivion. Perhaps you seek forbidden knowledge, or treasures worth kingdoms? Or do you walk a different path, one that will find you face to face with T'halth, the crusader of madness that lurks beneath your feet? Whatever reasoning, we welcome you with open arms to Amoria.\n\nMay your steps be swift, and your soul, if you have one left, remain your own until your inevitable, echoing end.")
 
 while True: 
     print(rooms[current_room]["description"])
