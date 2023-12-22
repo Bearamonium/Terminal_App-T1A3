@@ -12,10 +12,10 @@ class MossHaggardens(Enemy):
         super().__init__("Moss Haggardens", challenge_rating, skills)
         self.swamp_affinity = swamp_affinity
 
-    def acidic_spit(self, target, uses=3):
+    def acidic_spit(self, target, uses=2):
         self.uses = uses
         if uses > 0:
-            damage = randint(2, 3)
+            damage = randint(1, 4)
             print(f"A glob of acidic spit corrodes you for {damage} acid damage!")
             target.temp_gear_score -= damage
             uses -= 1
