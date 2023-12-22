@@ -1,315 +1,15 @@
 from random import randint
 from prettytable import PrettyTable
 import textwrap
-from colorama import Fore, Back, Style
-import re
-
-class Inventory_Items: 
-    def __init__(self, name, value, quantity=1):
-        self.name = name
-        self.value = value
-        self.quantity = quantity
-
-class Items(Inventory_Items):
-    def __init__(self, name, value, quantity=1):
-        super().__init__(name, value, quantity)
-        self.gear_score = None
-        self.type = "item"
-
-items = {
-    'Golden Sphere' : Items("Golden Sphere", 0), 
-    'Candle Key' : Items("Candle Key", 0), 
-    'Fire Orb' : Items("Fire Orb", 5), 
-}
-
-class Weapon(Inventory_Items):
-    def __init__(self, name, value, gear_score, quantity=1):
-        super().__init__(name, value, quantity)
-        self.gear_score = gear_score
-        self.type = "weapon"
-
-weapons = {
-    'Wooden Short Sword' : Weapon("Wooden Sword", 1, 3), 
-    'Wooden Short Bow' : Weapon("Wooden Short Bow", 1, 3), 
-    'Wooden Staff' : Weapon("Wooden Staff", 3, 3), 
-    'Iron Sword' : Weapon("Iron Sword", 1.5, 5), 
-    'Elm Short Bow' : Weapon("Elm Short Bow", 1.5, 5), 
-    'Elm Staff' : Weapon("Elm Staff", 1.5, 5), 
-}
-
-class Armour(Inventory_Items):
-    def __init__(self, name, value,gear_score, quantity=1):
-        super().__init__(name, value, quantity)
-        self.gear_score = gear_score
-        self.type = "armour"
-
-armour = {
-    'Chainmail Armour' : Armour("Chainmail Armour", 1, 3),
-    'Leather Armour' : Armour("Leather Armour", 1, 3),
-    'Student Robes' : Armour("Wizard Robes", 1, 3),
-    'Iron Armour' : Armour("Iron Armour", 1.5, 5),
-    'Studded Leather Armour' : Armour("Studded Leather Armour", 1.5, 5),
-    'Silk Robes' : Armour("Silk Robes", 1.5, 5)
-}
-
-class NoUsesLeft(Exception):
-    pass
-
-class Character: 
-    def __init__(self, class_name, lives, skills, intelligence, dexterity, strength):
-        self.class_name = class_name
-        self.lives = lives
-        self.skills = skills
-        self.intelligence = intelligence
-        self.dexterity = dexterity
-        self.strength = strength
-        self.equipment = None
-        self.inventory = []
-        self.temp_gear_score = 0
-    
-    def calculate_gear_score(self): 
-        return sum(item.gear_score for item in self.equipment.values()) + 2
-
-    def reduce_gear_score(self, damage):
-        self.temp_gear_score -= damage
-
-    def attack(self, target):
-            hit_roll = randint(1, 100)
-            if hit_roll <= 50:
-                target.challenge_rating -= 1
-                print(f"You landed a blow! The monster's challenge rating is now: {target.challenge_rating}")
-            else:
-                print("Your attack misses.")
-
-class NightWhisperer(Character):
-    def __init__(self, lives=1, skills={}, intelligence=10, dexterity=5, strength=2):
-        super().__init__("Night Whisperer", lives, skills, intelligence, dexterity, strength)
-        self.equipment = {
-            "weapon" : weapons["Wooden Staff"], 
-            "armour" : armour["Student Robes"]
-        }
-        self.skills = {
-            "Firebolt" : {"damage" : "1d6", "uses" : 6, "description" : "A swirling orb of molten gold, crackling with miniature lightning bursts. The air around it shimmers with heat distortion, exploding on impact."}, 
-            "Freezing Wind" : {"damage": "1d8", "uses" : 5, "description" : "Encases the target in a biting frost, slowing their movements and draining their warmth. Brittle ice creeps across their skin."}, 
-            "Phantom Feast" : {"damage" : "2d6", "uses" : 3, "description" : "The target is lured by the ghostly feast, their senses drawn to the illusion of forbidden indulgence. They become sluggish and disoriented, their mind entangled in the phantom delights."}, 
-            "Moonlight Barrage" : {"damage" : "2d8 + 1d4", "uses" : 1, "description" : "A shower of shimmering blades form, each etched with moonlight and laced with razor-sharp shadows. They tear through the enemy's defenses and leave trails of moonlight wounds."}
-            }
-    
-    def firebolt(self, target):
-        damage = randint(1, 6)
-        if player.skills["Firebolt"]["uses"] > 0:
-            print(f"You draw your hand in a swift arc, concentrating darkness into a blazing sphere and hurl towards the enemy with a whispered curse.")
-            print(f"Your sphere explodes against {target.name}, dealing {damage} fire damage.")
-            target.challenge_rating -= damage
-            player.skills["Firebolt"]["uses"] -= 1
-        else: 
-            raise NoUsesLeft
-
-    def freezing_wind(self, target):
-        damage = randint(1, 8)
-        if player.skills["Freezing Wind"]["uses"] > 0:
-            print("Lips trembling with a whispered frost-spell, a frigid gust rips from your palms. Blades of ice dance toward your enemy within the wind.")
-            print(f"Your spell strikes {target.name}, dealing {damage} ice damage.")
-            target.challenge_rating -= damage
-            player.skills["Freezing Wind"]["uses"] -= 1
-        else: 
-            raise NoUsesLeft
-
-    def phantom_feast(self, target):
-        damage = randint(1, 6) + randint(1, 6)
-        if player.skills["Phantom Feast"]["uses"] > 0:
-            print("You weave the shadows into a spectral feast, a low-pitched, hypnotic chant escaping from your lips as you ensnare the target in your illusion.")
-            print(f"{target.name} suffers {damage} illusion damage.")
-            target.challenge_rating -= damage
-            player.skills["Phantom Feast"]["uses"] -= 1
-        else: 
-            raise NoUsesLeft
-
-    def moonlight_barrage(self, target):
-        damage = randint(1, 8) + randint(1, 8) + randint(1, 4)
-        if player.skills["Moonlight Barrage"]["uses"] > 0:
-            print("You raise your hand, shadows and moonlight swirling around them to create a storm of uncast shadows.")
-            print(f"You unleash a volley of spectral blades, piercing {target.name} for {damage} raw magic damage.")
-            target.challenge_rating -= damage
-            player.skills["Moonlight Barrage"]["uses"] -= 1
-        else: 
-            raise NoUsesLeft
-
-    def gear_score(self):
-        return Character.calculate_gear_score(self)
-
-class CrimsonBlade(Character):
-    def __init__(self, lives=1, skills={}, intelligence=2, dexterity=5, strength=10):
-        super().__init__("Crimson Blade", lives, skills, intelligence, dexterity, strength)
-        self.equipment = {
-            "weapon" : weapons["Wooden Short Sword"], 
-            "armour" : armour["Chainmail Armour"]
-        }
-        self.skills = {
-            "Bloodbath Barrage" : {"damage" : "1d6", "uses" : 8, "description" : "Tear through your enemies with your blade, painting the air with bloody mist."}, 
-            "Crimson Cleaver" : {"damage" : "3d6", "uses" : 4, "description" : "Produce a shockwave that cracks the ground, flinging your target/s into the air."}
-        }
-
-    def bloodbath_barrage(self, target): 
-        damage = randint(1, 6)
-        if player.skills["Bloodbath Barrage"]["uses"] > 0:
-            print("You swiftly unleash your blade, whirling into a crimson-soaked cyclone as you scream towards your enemy.")
-            print(f"{target.name} suffers {damage} physical damage.")
-            target.challenge_rating -= damage
-            player.skills["Bloodbath Barrage"]["uses"] -= 1
-        else: 
-            raise NoUsesLeft
-
-    def crimson_cleaver(self, target):
-        damage = randint(1, 6) + randint(1, 6) + randint(1, 6)
-        if player.skills["Crimson Cleaver"]["uses"] > 0:
-            print("The ground trembles as you slams their weapon into the earth. A crimson shockwave erupts, cracking the ground and sending tremors that ripple outward.")
-            print(f"{target.name} fails to escape your shockwave, dealing {damage} physical damage.")
-            target.challenge_rating -=damage
-            player.skills["Crimson Cleaver"]["uses"] -= 1
-        else: 
-            raise NoUsesLeft
-
-    def gear_score(self):
-        return Character.calculate_gear_score(self)
-
-class SunsHunter(Character):
-    def __init__(self, lives=1, skills={}, intelligence=3, dexterity=10, strength=4):
-        super().__init__("Sun's Hunter", lives, skills, intelligence, dexterity, strength)
-        self.equipment = {
-            "weapon" : weapons["Wooden Short Bow"], 
-            "armour" : armour["Leather Armour"]
-        }
-        self.skills = {
-            "Hymn of Helios" : {"damage" : "1d6 + 1d4", "uses" : 5, "description" : "Channel the blinding brilliance of the sun, firing a searing arrow leaving smoldering trails in its wake."}, 
-            "Sun's Ire" : {"damage": "2d6", "uses" : 4, "description" : "Unleash a scorching arrow imbued with solar fury, exploding on impact and dealing heavy damage to a small area."}, 
-            "Hunter's Volley" : {"damage" : "3d8", "uses" : 1, "description" : "Launch a rapid succession of precise arrows, peppering enemies with a hail of feathers and steel."}
-            }
-
-    def hymn_of_helios(self, target):
-        damage = randint(1, 6) + randint(1, 4)
-        if player.skills["Hymn of Helios"]["uses"] > 0:
-            print(f"As you draw your bow, light gathers around your arrowhead with the fierceness of the sun as you unleash your arrow, chanting the Sun's blessing.")
-            print(f"You strike true, dealing {damage} fire damage to {target.name}.")
-            target.challenge_rating -= damage
-            player.skills["Hymn of Helios"]["uses"] -= 1
-        else: 
-            raise NoUsesLeft
-    def suns_ire(self, target):
-        damage = randint(1, 6) + randint(1, 6)
-        if player.skills["Sun's Ire"]["uses"] > 0:
-            print("Gritting your teeth and drawing on the Sun's power, you unleashe a devastating solar projectile towards your target.")
-            print(f"Finding your mark, {target.name} suffers {damage} fire damage.")
-            target.challenge_rating -= damage
-            player.skills["Sun's Ire"]["uses"] -= 1
-        else: 
-            return NoUsesLeft
-
-    def hunters_volley(self, target):
-        damage = randint(1, 8) + randint(1, 8) + randint(1, 8)
-        if player.skills["Hunter's Volley"]["uses"] != 0:
-            print(f"You unleash a storm of sun-kissed arrows, each shot finding their mark without effort.")
-            print(f"{target.name} suffers {damage} ranged damage.")
-            target.challenge_rating -= damage
-            player.skills["Hunter's Volley"]["uses"] -= 1
-        else: 
-            raise NoUsesLeft
-
-    def gear_score(self):
-        return Character.calculate_gear_score(self)
-
-class Enemy:
-    def __init__(self, name, challenge_rating, skills):
-        self.name = name
-        self.challenge_rating = challenge_rating
-        self.skills = skills
-
-class MossHaggardens(Enemy):
-    def __init__(self, challenge_rating, skills, swamp_affinity=True):
-        super().__init__("Moss Haggardens", challenge_rating, skills)
-        self.swamp_affinity = swamp_affinity
-
-    def acidic_spit(self, target, uses=3):
-        self.uses = uses
-        if uses > 0:
-            damage = randint(2, 3)
-            print(f"A glob of acidic spit corrodes you for {damage} acid damage!")
-            target.temp_gear_score -= damage
-            uses -= 1
-        elif uses == 0:
-            return NoUsesLeft
-            
-class BoneGnashers(Enemy):
-    def __init__(self, challenge_rating, skills, bone_crush_attack=True):
-        super().__init__("Bone Gnashers", challenge_rating, skills)
-        self.bone_crush_attack = bone_crush_attack
-
-    def bone_club_smash(self, target, uses=3):
-        self.uses = uses
-        if uses > 0:
-            damage = int(2 * randint(1, 2))
-            print(f"A bone-tipped club swings down, crushing you for {damage} bludgeoning damage!")
-            target.temp_gear_score -= damage
-        elif uses == 0:
-            return NoUsesLeft
-
-class Whisperers(Enemy):
-
-    def __init__(self, challenge_rating, skills, telepathic_influence=True):
-        super().__init__("Whisperers", challenge_rating, skills)
-        self.telepathic_influence = telepathic_influence
-
-    def psychic_blast(self, target, uses=3):
-        self.uses = uses
-        if uses > 0:
-            damage = randint(2, 3)
-            print(f"The creature's mind explodes with force, striking you for {damage} psychic damage!")
-            target.temp_gear_score -= damage
-        elif uses == 0:
-            return NoUsesLeft
-
-class Gloomweavers(Enemy):
-    def __init__(self, challenge_rating, skills, shadow_manipulation=True):
-        super().__init__("Gloomweavers", challenge_rating, skills)
-        self.shadow_manipulation = shadow_manipulation
-
-    def shadow_lash(self, target, uses=2):
-        self.uses = uses
-        if uses > 0:
-            damage = randint(2, 3)
-            print(f"Whipping tendrils of darkness lash out at you, inflicting {damage} shadow damage!")
-            target.temp_gear_score -= damage
-        elif uses == 0:
-            return NoUsesLeft
-
-class Xhoth(Enemy):
-    def __init__(self, name="Xhoth", challenge_rating=8, skills=["Consume Essence", "Shadow Tendrils", "Nightmare Visions"]):
-        super().__init__(name, challenge_rating, skills)
-        self.undying = True
-
-    def consume_essence(self, target):
-        # Deal damage and steal life force from the target, healing Xhoth.
-        damage = randint(2, 4)
-        target.temp_gear_score -= damage
-        self.challenge_rating += damage // 2
-        print(f"Xhoth drains {damage} life force from {target.name}, growing stronger!")
-
-    def shadow_claws(self, target):
-        damage = randint(3, 5)
-        target.temp_gear_score -= damage
-        print(f" Xhoth's shadow extends, forming claw-like appendages that slash at you from multiple angles, dealing {damage} shadow damage.")
-
-    def night_terror(self, target, uses=1):
-        damage = randint(3, 6)
-        if uses > 0:
-            target.temp_gear_score -= damage
-            print(f"Xhoth traps you in a living nightmare, inflicting {damage} shadow damage.")
-        else:
-            print(f"Xhoth's visions flicker harmlessly in your mind.")
-            return NoUsesLeft
+from colorama import Fore, Style, Back
+from inventory_items import Items, Weapon, Armour, items, weapons, armour
+from character import CrimsonBlade, NightWhisperer, SunsHunter, NoUsesLeft
+from enemies import MossHaggardens, Whisperers, Gloomweavers, BoneGnashers, Xhoth
 
 def boss_Xhoth():
-    pass
+    print(f"XHOTH: {player_name}, welcome to your final resting place.")
+    enemy = rooms[current_room]["boss"][0]
+    start_combat(enemy)
 
 def hit_chance(gear_score, challenge_rating): 
     return gear_score + challenge_rating 
@@ -321,16 +21,13 @@ def create_menu():
     print("[2] Use an item")
     print("[3] Open Inventory")
     print("[4] Move")
-    print(Style.RESET_ALL)
+    print(Fore.RESET)
     choice = input("> ")
     return choice
 
 def explore_room():
     if "additional description" in rooms[current_room]:
         print(text_wrapper.fill(rooms[current_room]["additional description"]))
-
-    if current_room is rooms["Boss Room"]:
-        boss_Xhoth()
 
     if "enemies" in rooms[current_room]:
         enemy = rooms[current_room]["enemies"][0] # Assuming single enemy for now
@@ -362,6 +59,9 @@ def game_over():
     # TODO: add in choice to restart the adventure or quit the game
     quit()
 
+def game_completed():
+    pass
+
 def attack_list(enemy):
 
     print("Please select an action.")
@@ -369,7 +69,7 @@ def attack_list(enemy):
     skill_menu = PrettyTable(["Skill", "Damage", "Uses", "Description"])
     for skill, stats in player.skills.items(): 
         skill_menu.add_row([skill, stats["damage"], stats["uses"], stats["description"]])
-    skill_menu.add_row(["Basic Attack", 1, "-", "You attack with your current equipped weapon."])
+    skill_menu.add_row(["Attack", "1d4", "-", "You attack with your current equipped weapon."])
     print(skill_menu)
     while True: 
         attack_choice = input("Make your selection: ").lower()
@@ -686,12 +386,14 @@ classes = {
     },
 }
 
-text_wrapper = textwrap.TextWrapper(width=150,
+text_wrapper = textwrap.TextWrapper(width=95,
                                     initial_indent="    ",
                                     subsequent_indent="    ",
-                                    replace_whitespace=False)
+                                    drop_whitespace=False,
+                                    replace_whitespace=False
+                                    )
 
-print("Welcome, Foolhardy Soul, to Amoria's Embrace.")
+print(Style.BRIGHT + "Welcome, Foolhardy Soul, to Amoria's Embrace.")
 
 menu_option = input("Would you like to venture forth? (y/n): ")
 
@@ -703,26 +405,25 @@ elif menu_option == "n":
 else: 
     print("Invalid input! Please select y or n.")
 
-player_name = input(Fore.RED+"What should Amoria know you as, brave adventurer?: "+Fore.RESET)
+player_name = input(Fore.GREEN + "What should Amoria know you as, brave adventurer?: ")
 
-class_menu = PrettyTable([Fore.BLUE + Style.BRIGHT + "Class", Fore.YELLOW + "Lives", Fore.CYAN + "Gear Score", Fore.MAGENTA + "Skills"])
+class_menu = PrettyTable(["Class", "Lives", "Gear Score", "Skills"])
 
 for class_name, class_data in classes.items():
     class_menu.add_row([
-        Fore.BLUE + class_name, 
+        Fore.WHITE + class_name, 
         Fore.YELLOW + str(class_data["lives"]), 
         Fore.CYAN + str(class_data["gear_score"]()), 
-        Fore.MAGENTA + class_data["skills"]])
+        Fore.WHITE + class_data["skills"]])
 
-print(class_menu, Style.RESET_ALL)
+print(class_menu, Fore.RESET)
 
 class_choice = input(f"{player_name}, please choose your starting class (Crimson Blade, Sun's Hunter, Night Whisperer) to begin your descent into Amoria: ").lower()
 
 while class_choice not in ("crimson blade", "sun's hunter", "night whisperer"):
     print("Invalid choice. Please choose one of the three classes.")
-    class_choice = input(f"{player_name}, please choose your starting class (Warrior, Rogue, Wizard): ").lower()
+    class_choice = input(f"{player_name}, please choose your starting class (Crimson Blade, Sun's Hunter, Night Whisperer): ").lower()
 
-# Instantiate player based on the chosen class
 if class_choice == "crimson blade":
     player = CrimsonBlade()
 elif class_choice == "sun's hunter":
@@ -730,20 +431,21 @@ elif class_choice == "sun's hunter":
 elif class_choice == "night whisperer":
     player = NightWhisperer()
 
-print(Style.BRIGHT + text_wrapper.fill(
-    re.sub(r"\s+", " ", textwrap.dedent("""
-    The ground beneath your feet shivers with a thousand echoing screams. You stand at the precipice of Amoria, where shadows writhe and madness whispers promises in the wind. This is no mere dungeon, adventurer, but a festering wound upon the world, a gateway to horrors beyond mortal comprehension.\n
-
-    Here, hope withers faster than flowers in winter, and courage curdles under the gaze of things best left unseen. Within these obsidian walls, time bends and twists, sanity unravels like silk in a storm, and death is but a prelude to something far worse.
-
-    But it seems that you possess a curiosity as sharp as a shard of oblivion. Perhaps you seek forbidden knowledge, or treasures worth kingdoms? Or do you walk a different path, one that will find you face to face with T'halth, the crusader of madness that lurks beneath your feet? Whatever reasoning, we welcome you with open arms to Amoria. 
-
-    May your steps be swift, and your soul, if you have one left, remain your own until your inevitable, echoing end.
-    """).strip())
-))
+print(Fore.BLACK + text_wrapper.fill("""
+    The ground beneath your feet shivers with a thousand echoing screams. You stand at the precipice of Amoria, where shadows writhe and madness whispers promises in the wind. This is no mere dungeon, adventurer, but a festering wound upon the world, a gateway to horrors beyond mortal comprehension.
+"""))
+print(text_wrapper.fill("""Here, hope withers faster than flowers in winter, and courage curdles under the gaze of things best left unseen. Within these obsidian walls, time bends and twists, sanity unravels like silk in a storm, and death is but a prelude to something far worse.
+"""))
+print(text_wrapper.fill("""But it seems that you possess a curiosity as sharp as a shard of oblivion. Perhaps you seek forbidden knowledge, or treasures worth kingdoms? Or do you walk a different path, one that will find you face to face with T'halth, the crusader of madness that lurks beneath your feet?
+"""))
+print(text_wrapper.fill("""Whatever reasoning, we welcome you with open arms to Amoria. May your steps be swift, and your soul, if you have one left, remain your own until your inevitable, echoing end.
+"""))
 
 while True: 
     print(Fore.GREEN + text_wrapper.fill(rooms[current_room]["description"]))
+
+    if current_room == "Boss Room":
+        boss_Xhoth()
 
     while True:
         users_choice = create_menu()
