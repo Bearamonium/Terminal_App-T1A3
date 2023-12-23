@@ -1,5 +1,11 @@
 # Terminal Application - T1A3
 
+## Application Creater
+
+### Philip Mills
+
+#### October 2023 Standard Cohort, Coder Academy
+
 ## GitHub Repository Link
 
 https://github.com/Bearamonium/Terminal_App-T1A3.git
