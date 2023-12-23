@@ -101,22 +101,24 @@ class GameOverException(Exception):
 def start_game():
     global player
 
-    print(Style.BRIGHT + "Welcome, Foolhardy Soul, to Amoria's Embrace.")
+    print(Style.BRIGHT 
+          + "Welcome, Foolhardy Soul, to Amoria's Embrace.")
 
-    menu_option = input("Would you like to venture forth? (y/n): ")
-
-    if menu_option == "y":
-        print("The call of Amoria beckons you!")
-    elif menu_option == "n":
-        print("A shame, some other time perhaps? Amoria will be waiting...")
-        quit()
-    else: 
-        print("Invalid input! Please select y or n.")
+    while True:
+        menu_option = input("Would you like to venture forth? (y/n): ")
+        if menu_option == "y":
+            print("The call of Amoria beckons you!")
+            break
+        elif menu_option == "n":
+            print("A shame, some other time perhaps? Amoria will be waiting...")
+            quit()
+        else: 
+            print("Invalid input! Please select y or n.")
 
     player = class_menu(player)
 
     print(Fore.BLACK + text_wrapper.fill("""
-        The ground beneath your feet shivers with a thousand echoing screams. You stand at the precipice of Amoria, where shadows writhe and madness whispers promises in the wind. This is no mere dungeon, adventurer, but a festering wound upon the world, a gateway to horrors beyond mortal comprehension.
+    The ground beneath your feet shivers with a thousand echoing screams. You stand at the precipice of Amoria, where shadows writhe and madness whispers promises in the wind. This is no mere dungeon, adventurer, but a festering wound upon the world, a gateway to horrors beyond mortal comprehension.
     """))
     print(text_wrapper.fill("""Here, hope withers faster than flowers in winter, and courage curdles under the gaze of things best left unseen. Within these obsidian walls, time bends and twists, sanity unravels like silk in a storm, and death is but a prelude to something far worse.
     """))
@@ -128,7 +130,9 @@ def start_game():
     while True: 
         global current_room
         try:      
-            print(Fore.GREEN + text_wrapper.fill(rooms[current_room]["description"]) + Fore.RESET)
+            print(Fore.GREEN 
+                  + text_wrapper.fill(rooms[current_room]["description"]) 
+                  + Fore.RESET)
 
             if current_room == "Boss Room":
                 boss_Xhoth()
@@ -176,9 +180,23 @@ def start_game():
             else: 
                 raise
 
+def restart_game():
+    print("Restarting the game...")
+    global player_name, player, rooms, current_room
+    player_name, player, rooms, current_room = initialise_game()
+    start_game()
+
+def game_over():
+    choice = input("Would you like to restart the adventure or quit the game? (r/q): ")
+    if choice.lower() == "r":
+        restart_game()
+    else:
+        quit()
+
 def class_menu(player):
 
-    player_name = input(Fore.GREEN + "What should Amoria know you as, brave adventurer?: ")
+    player_name = input(Fore.GREEN 
+                        + "What should Amoria know you as, brave adventurer?: ")
 
     class_menu = PrettyTable(["Class", "Lives", "Gear Score", "Skills"])
 
@@ -224,8 +242,16 @@ def attack_list(enemy):
 
     skill_menu = PrettyTable(["Skill", "Damage", "Uses", "Description"])
     for skill, stats in player.skills.items(): 
-        skill_menu.add_row([skill, stats["damage"], stats["uses"], stats["description"]])
-    skill_menu.add_row(["Attack", "1d4", "-", "You attack with your current equipped weapon."])
+        skill_menu.add_row([
+            skill, 
+            stats["damage"], 
+            stats["uses"], 
+            stats["description"]])
+    skill_menu.add_row([
+        "Attack", 
+        "1d4", 
+        "-", 
+        "You attack with your current equipped weapon."])
     print(skill_menu)
     while True: 
         attack_choice = input("Make your selection: ").lower()
@@ -278,12 +304,16 @@ def explore_room():
 
     if "enemies" in rooms[current_room]:
         enemy = rooms[current_room]["enemies"][0] # Assuming single enemy for now
-        print(Fore.LIGHTRED_EX + f"You have run into {enemy.name}! Prepare yourself!" + Fore.RESET)
+        print(Fore.LIGHTRED_EX 
+              + f"You have run into {enemy.name}! Prepare yourself!" 
+              + Fore.RESET)
         start_combat(enemy)
 
     if "items" in rooms[current_room] and len(rooms[current_room]["items"]) > 0:
         for item in rooms[current_room]["items"]:
-            print(Fore.LIGHTCYAN_EX + f"Something shiny catches your eye. You step closer and find yourself looking at a {item.name}!" + Fore.RESET)
+            print(Fore.LIGHTCYAN_EX 
+                  + f"Something shiny catches your eye. You step closer and find yourself looking at a {item.name}!" 
+                  + Fore.RESET)
             user_choice = input("Pick up the item? (y/n) ").lower()
             match user_choice:
                 case "y":
@@ -301,24 +331,21 @@ def explore_room():
 
             if not rooms[current_room]["items"]:
                 break # Exit the while loop if all items have been collected or ignored
+
     else: 
-        print(Fore.YELLOW + text_wrapper.fill("""
-        This area seems bare of any treasure or surprises."""))
+        print(Fore.WHITE + text_wrapper.fill("""This area seems bare of any treasure or surprises.""") 
+              + Fore.RESET)
 
 def boss_Xhoth():
-    print(Fore.RED + text_wrapper.fill(f"XHOTH: Might adventuer, a foolish decision to enter my domain on your behalf. For the intrusion, allow me to be the one to welcome you to your final resting place.") + Fore.RESET)
+    print(Fore.RED + text_wrapper.fill(f"XHOTH: Might adventuer, a foolish decision to enter my domain on your behalf. For the intrusion, allow me to be the one to welcome you to your final resting place.") 
+          + Fore.RESET)
     enemy = rooms[current_room]["enemies"][0]
     start_combat(enemy)
-    print(Fore.YELLOW + text_wrapper.fill("Silence. A single ray of light pierces the gloom, illuminating the dust motes dancing in its path. Victory, but at what cost? The weight of the journey settles, a bittersweet blend of triumph and loss. But, Xhoth was just the first step on your hellish journey, and Amoria can't be kept waiting...") + Fore.RESET)
-    print(Fore.GREEN + "\n\nYou have successfully cleared the first floor of Amoria! Thank you for playing and we hope you will be eager to return and continue your players journey on the second floor of Amoria, for the real danger has only just begun." + Fore.RESET)
+    print(Fore.YELLOW + text_wrapper.fill("Silence. A single ray of light pierces the gloom, illuminating the dust motes dancing in its path. Victory, but at what cost? The weight of the journey settles, a bittersweet blend of triumph and loss. But, Xhoth was just the first step on your hellish journey, and Amoria can't be kept waiting...") 
+          + Fore.RESET)
+    print(Fore.GREEN + "\n\nYou have successfully cleared the first floor of Amoria! Thank you for playing and we hope you will be eager to return and continue your players journey on the second floor of Amoria, for the real danger has only just begun." 
+          + Fore.RESET)
     game_over()
-
-def game_over():
-    choice = input("Would you like to restart the adventure or quit the game? (r/q): ")
-    if choice.lower() == "r":
-        restart_game()
-    else:
-        quit()
 
 def use_item():
 
@@ -509,12 +536,6 @@ def start_combat(enemy):
 def flee_failed():
     flee_roll = randint(1, 100)
     return flee_roll > 25
-
-def restart_game():
-    print("Restarting the game...")
-    global player_name, player, rooms, current_room
-    player_name, player, rooms, current_room = initialise_game()
-    start_game()
 
 classes = {
     "Crimson Blade": {

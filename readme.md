@@ -4,11 +4,15 @@
 
 https://github.com/Bearamonium/Terminal_App-T1A3.git
 
-## Code Styling Guide - PEP 8
-
 ## Text-Based Dungeon Crawler
 
 Welcome to Amoria - a simple, single player, text-based dungeon crawler adventure! 
+
+## Code Styling Guide - PEP 8
+
+Where applicable outside of styling code used from textwrap, PEP 8 has been chosen as the appropriate styling guide for the code used for Amoria. The style guide makes the code easier for overall readability and comprehension - using correct indentations and naming conventions. 
+
+The link for the PEP 8 styling guide can be found at https://peps.python.org/pep-0008/#programming-recommendations. 
 
 ## Features List
 
@@ -97,23 +101,23 @@ https://trello.com/invite/b/0OJzT7jV/ATTI306d9fa0e046d2ea4643d11059b7f5282E1CD14
 
 ### Screenshots from Trello: 
 
-![Alt text](<Screenshot 2023-12-16 120133.png>)
+![Alt text](./resources/Screenshot%202023-12-16%20120133.png)
 
-![Alt text](<Screenshot 2023-12-16 120157.png>)
+![Alt text](./resources/Screenshot%202023-12-16%20120157.png)
 
-![Alt text](<Screenshot 2023-12-19 002900.png>)
+![Alt text](./resources/Screenshot%202023-12-19%20002900.png)
 
-![Alt text](<Screenshot 2023-12-19 003018.png>)
+![Alt text](./resources/Screenshot%202023-12-19%20003018.png)
 
-![Alt text](<Screenshot 2023-12-19 003156.png>)
+![Alt text](./resources/Screenshot%202023-12-19%20003156.png)
 
-![Alt text](<Screenshot 2023-12-20 233924.png>)
+![Alt text](./resources/Screenshot%202023-12-20%20233924.png)
 
-![Alt text](<Screenshot 2023-12-20 234052.png>)
+![Alt text](./resources/Screenshot%202023-12-20%20234052.png)
 
-![Alt text](<Screenshot 2023-12-23 110139.png>)
+![Alt text](./resources/Screenshot%202023-12-23%20110139.png)
 
-![Alt text](<Screenshot 2023-12-23 111943.png>)
+![Alt text](./resources/Screenshot%202023-12-23%20111943.png)
 
 ## Installation & Guide
 
