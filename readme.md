@@ -62,19 +62,115 @@ Each loop of restarting the game will re-initalise each room, along with your st
 
 ## Implementation Plan
 
-Object Orientated Programming (OOP) will be the main basis of creation for all source code of Amoria. 
+Object Orientated Programming (OOP) will be the main basis of creation for all source code of Amoria. Trello has been used as the project management software of choice, link below: 
 
-- Classes<br>
-        Each class will have it's own abilities, starting inventory and starting gear score
+https://trello.com/invite/b/0OJzT7jV/ATTI306d9fa0e046d2ea4643d11059b7f5282E1CD145/terminal-application
 
-- Dungeon Movement <br>
-        All movement within the dungeon will be held within the gameplay loop, and take user inputs to move their character through each room/floor in the dungeon. 
+- Classes
+    - Each class will have it's own abilities, starting inventory and starting gear score
+    - Skills will be added as separate functions to allow a battle loop to be efficiently created
+    - Each class will use inheritance on the main Class of Character
+    - Gear scores for the characters will be based on the attriubtes of the weapon and armour they have currently equipped - starting inventory will be initialised in the class
+
+- Dungeon Movement
+    - All movement within the dungeon will be held within the gameplay loop, and take user inputs to move their character through each room/floor in the dungeon. 
+    - Input will then move the current room variable to match the room player wanted to move to
+    - Players will be able to move into new rooms depending on whether they have used the specified item in the room dictionary
+    - Descriptions of each room will printed for the player each time they enter a new room
+    - Menu will be included which gives the player options on what they would like to do in the current room
+    - Additional descriptions, if available, will also print to the player when exploring the room
+    - Combat and item pick up will be prompted when exploring the room as well
+
+- Combat
+    - Combat loop, using other functions like an attack list to be implemented
+    - Player will be prompted that they have run into an enemy, and can choose to either attack or flee from the encounter
+    - Attack list function will print a table of available skills to the user if they choose to attack, and user will type in the relevant skill name to use the skill
+    - Monster will attack AFTER player has made their choices 
+    - Damage will be handled through the monster's challenge rating, and the players gear score, handled through a instanced attribute that will reset each encounter based on their current gear score total
+    - Game over or continuation of the game based on the outcome of combat
+
+- Loot Features & Inventory Management
+    - Items to be added into the rooms dictionary for players to pick up as they progress
+    - Inventory management feature to be included to allow players to access their current items
+    - Equip and unequip items feature to be added for players to change their current equipped items using input prompts
+    - Usage of items will also be available, depending on the room dictionary and if the item is listed as availabe to use
+
+### Screenshots from Trello: 
+
+![Alt text](<Screenshot 2023-12-16 120133.png>)
+
+![Alt text](<Screenshot 2023-12-16 120157.png>)
+
+![Alt text](<Screenshot 2023-12-19 002900.png>)
+
+![Alt text](<Screenshot 2023-12-19 003018.png>)
+
+![Alt text](<Screenshot 2023-12-19 003156.png>)
+
+![Alt text](<Screenshot 2023-12-20 233924.png>)
+
+![Alt text](<Screenshot 2023-12-20 234052.png>)
+
+![Alt text](<Screenshot 2023-12-23 110139.png>)
+
+![Alt text](<Screenshot 2023-12-23 111943.png>)
 
 ## Installation & Guide
 
-To begin installation, you will need to open your terminal program or app of choice, and run the command to execute the installation file run.sh. 
+### Prerequisites: 
 
-Amoria requires Python to be installed on your computer. The bash script provided (run.sh) will run through the specific installation requirements and in turn install python on your computer if you don't already have it. 
+- Operating Systems: 
+    - Linux
+    - macOS
+    - Windows 
+- Bash: Access to a Bash environment (default on Linux and macOS, available through GitBash or WSL on Windows)
+- Python: Installation steps below, you can check if python is already installed using ```python --version``` on the command line
 
-Once it has completed the installation, it will then initalise a virtual environment which will allow the program to install the required packages it needs to run. Following this, Amoria is yours to explore! 
+### Installation Steps: 
+
+1. Open a Terminal
+
+    - Linux/macOS: Open the Terminal app.
+    - Windows: 
+        - Git Bash: Open Git Bash.
+        - PowerShell: Follow steps below for Windows setup.
+        - WSL: Open the WSL terminal
+
+2. Navigate to Directory: 
+Use the ```cd``` command to change thr working directory to the location of the run.sh file included in the folder download. For example: 
+
+```bash
+cd ./path/to/your/download/location
+```
+
+Alternitively, you could open your terminal app in the current folder by right clicking on the folder and choosing "Open in terminal". 
+
+3. Run the following command to execute the script: 
+
+```bash
+bash run.sh
+```
+
+### Python Windows Installation Steps: 
+
+1. Download the Installer:
+
+- Visit the official Python website: https://www.python.org/downloads/windows/
+- Choose the latest stable version of Python 3 (e.g., Python 3.10 as of today).
+- Click the "Download Windows installer (64-bit)" button (or 32-bit if needed).
+
+2. Run the Installer:
+
+- Double-click the downloaded installer file.
+- Check the "Add Python 3.x to PATH" option (crucial for running Python from the command line).
+- Click "Install Now" to proceed with the standard installation.
+
+3. Verify Installation:
+
+- Open a command prompt or PowerShell window.
+- Type python --version and press Enter.
+- If Python is installed correctly, you'll see its version number displayed.
+
+
+
 

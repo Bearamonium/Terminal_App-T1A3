@@ -1,7 +1,6 @@
 from random import randint
 from prettytable import PrettyTable
 import textwrap
-import json
 from colorama import Fore, Style, Back
 from inventory_items import Items, Weapon, Armour, items, weapons, armour
 from character import CrimsonBlade, NightWhisperer, SunsHunter, NoUsesLeft
@@ -134,17 +133,16 @@ def start_game():
             while True:
                 users_choice = create_menu()
 
-                if users_choice in ["1", "2", "3"]:
+                if users_choice in ["1", "2"]:
                     actions = {
                         "1" : explore_room, 
-                        "2" : use_item,
-                        "3" : manage_inventory
+                        "2" : manage_inventory
                     }
                     actions[users_choice]()
 
                     users_choice = ""
 
-                elif users_choice == "4":
+                elif users_choice == "3":
                     break
 
                 else: 
@@ -208,9 +206,8 @@ def create_menu():
     print(Fore.BLUE)
     print("What do you want to do?")
     print("[1] Explore the area")
-    print("[2] Use an item")
-    print("[3] Open Inventory")
-    print("[4] Move")
+    print("[2] Open Inventory")
+    print("[3] Move")
     print(Fore.RESET)
     choice = input("> ")
     return choice
@@ -274,17 +271,17 @@ def attack_list(enemy):
 
 def explore_room():
     if "additional description" in rooms[current_room]:
-        print(text_wrapper.fill(rooms[current_room]["additional description"]))
+        print(Fore.YELLOW + text_wrapper.fill(rooms[current_room]["additional description"]))
 
     if "enemies" in rooms[current_room]:
         enemy = rooms[current_room]["enemies"][0] # Assuming single enemy for now
-        print(f"You have run into {enemy.name}! Prepare yourself!")
+        print(Fore.LIGHTRED_EX + f"You have run into {enemy.name}! Prepare yourself!" + Fore.RESET)
         start_combat(enemy)
 
     if "items" in rooms[current_room] and len(rooms[current_room]["items"]) > 0:
         while len(rooms[current_room]["items"]) > 0:
             for item in rooms[current_room]["items"]:
-                print(f"Something shiny catches your eye. You step closer and find yourself looking at a {item.name}!")
+                print(Fore.LIGHTCYAN_EX + f"Something shiny catches your eye. You step closer and find yourself looking at a {item.name}!" + Fore.RESET)
                 user_choice = input("Pick up the item? (y/n) ").lower()
                 match user_choice:
                     case "y":
@@ -334,23 +331,23 @@ def use_item():
                         print("You place the key gently in the opening on the door, pushing it outwards until a loud click is heard. The ground beneath you trembles as the door cracks in half, illuminating the room in a crude obsidian light. Fear reaches for you, for your soul, as the light grows brighter. But it's not your fear. It's the fear of the fallen beyond this door. The fear of the defeated, the agony of their loss, washes over you in waves. The stench of dread and despair grows stronger as the crack seeping obsidian all but disintigrates the door, leaving a solid stone archway, paving your fate for better or worse.")
                         rooms[current_room]["item use"].remove(items["Candle Key"])
                         rooms[current_room]["exits"] = rooms[current_room]["item used exits"]
-                        return
+                        break
                     else:
                         print("This item cannot be used in this room.")
-                        return
+                        break
                 case "fire orb":
                     if items["Fire Orb"] in rooms[current_room]["item use"]:
                         print("Used 'Fire Orb'.")
                         print("A soft click can be heard, along with the scraping sound of stone shifting and sliding against itself.")
                         rooms[current_room]["item use"].remove(items["Fire Orb"])
                         rooms[current_room]["exits"] = rooms[current_room]["item used exits"]
-                        return
+                        break
                     else:
                         print("This item cannot be used in this room.")
-                        return
+                        break
                 case "golden sphere":
                     print("This item cannot be used yet.")
-                    return
+                    break
                 case _:
                     print("Please select one of the available items to use.")
     else: 
@@ -360,17 +357,17 @@ def manage_inventory():
     while True: 
         print("\nInventory:")
         for i, item in enumerate(player.inventory):
-            print(f"{i+1}. {item.name} ({item.type})")
+            print(Fore.BLUE + text_wrapper.fill(f"{i+1}. {item.name} ({item.type})"))
         
         print("\nEquipped Items:")
         for slot, item in player.equipment.items():
-            print(f"{slot.capitalize()}: {item.name}")
+            print(Fore.RED + text_wrapper.fill(f"{slot.capitalize()}: {item.name}"))
 
-        print("\nChoose an action:")
+        print(Fore.BLUE + "\nChoose an action:")
         print("1. Equip an item.")
         print("2. Unequip an item.")
         print("3. Use an item.")
-        print("4. Quit.")
+        print("4. Quit." + Fore.RESET)
 
         choice = input("> ")
 
@@ -434,7 +431,7 @@ def equip_armour(armour):
 
 def start_combat(enemy):
     global in_combat
-    player.temp_gear_score = player.gear_score() # Reset Gear Score for each encounter seeing as healing hasn't been intialised in this game
+    player.temp_gear_score = player.gear_score() # Reset Gear Score for each encounter 
     in_combat = True
 
     while in_combat: 
@@ -447,23 +444,35 @@ def start_combat(enemy):
             else: 
                 print("Invalid response. Please enter 'a' or 'f'.")
 
-        if player_action == "a" or (player_action == "f" and flee_failed(enemy)):
-            while True: 
-                if player_action == "f" and flee_failed(enemy):
-                    print("Oh no! The monster has blocked your escape - you have no choice but to attack!")
-                try:
-                    attack_list(enemy)
-                    if enemy.challenge_rating <= 0:
-                        print(f"Victory! You defeated {enemy.name}!")
-                        del rooms[current_room]["enemies"]
-                        in_combat = False
+        if player_action == "a":
+            try:
+                attack_list(enemy)
+                if enemy.challenge_rating <= 0:
+                    print(f"Victory! You defeated {enemy.name}!")
+                    del rooms[current_room]["enemies"]
+                    in_combat = False
                     break
-                except NoUsesLeft: 
-                    print("No more uses left for that skill! Choose another action.")
-
-        else:
-            print("You have escaped successfully.")
-            in_combat = False
+            except NoUsesLeft:
+                print("No more uses left for that skill! Choose another action.")
+                # Player's turn continues
+        elif player_action == "f":
+            if flee_failed():
+                print("Oh no! The monster has blocked your escape - you must attack!")
+                while True: 
+                    try:
+                        attack_list(enemy)
+                        if enemy.challenge_rating <= 0:
+                            print(f"Victory! You defeated {enemy.name}!")
+                            del rooms[current_room]["enemies"]
+                            in_combat = False
+                            break
+                        break
+                    except NoUsesLeft:
+                        print("No more uses left for that skill! Choose another action.")                        
+            else:
+                print("You have escaped successfully.")
+                in_combat = False
+                break
 
         if in_combat and enemy.challenge_rating > 0:
             if randint(1, 10) <= 8:
@@ -486,9 +495,9 @@ def start_combat(enemy):
         if not in_combat: 
             print("Exiting combat.")
 
-def flee_failed(enemy):
+def flee_failed():
     flee_roll = randint(1, 100)
-    return flee_roll > 50
+    return flee_roll > 25
 
 def restart_game():
     print("Restarting the game...")
