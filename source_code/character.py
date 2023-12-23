@@ -1,5 +1,6 @@
 from inventory_items import weapons, armour
 from random import randint
+from colorama import Fore
 
 class NoUsesLeft(Exception):
     pass
@@ -26,7 +27,7 @@ class Character:
             hit_roll = randint(1, 100)
             if hit_roll <= 80:
                 target.challenge_rating -= randint(1, 4)
-                print(f"You landed a blow! The monster's challenge rating is now: {target.challenge_rating}")
+                print(Fore.GREEN + f"You landed a blow! The monster's challenge rating is now: {target.challenge_rating}" + Fore.RESET)
             else:
                 print("Your attack misses.")
 
@@ -47,8 +48,8 @@ class NightWhisperer(Character):
     def firebolt(self, target):
         damage = randint(1, 8)
         if self.skills["Firebolt"]["uses"] > 0:
-            print(f"You draw your hand in a swift arc, concentrating darkness into a blazing sphere and hurl towards the enemy with a whispered curse.")
-            print(f"Your sphere explodes against {target.name}, dealing {damage} fire damage.")
+            print(Fore.YELLOW + f"You draw your hand in a swift arc, concentrating darkness into a blazing sphere and hurl towards the enemy with a whispered curse." + Fore.RESET)
+            print(Fore.GREEN + f"Your sphere explodes against {target.name}, dealing {damage} fire damage." + Fore.RESET)
             target.challenge_rating -= damage
             self.skills["Firebolt"]["uses"] -= 1
         else: 
@@ -57,8 +58,8 @@ class NightWhisperer(Character):
     def freezing_wind(self, target):
         damage = randint(1, 6) + randint(1, 4)
         if self.skills["Freezing Wind"]["uses"] > 0:
-            print("Lips trembling with a whispered frost-spell, a frigid gust rips from your palms. Blades of ice dance toward your enemy within the wind.")
-            print(f"Your spell strikes {target.name}, dealing {damage} ice damage.")
+            print(Fore.YELLOW + "Lips trembling with a whispered frost-spell, a frigid gust rips from your palms. Blades of ice dance toward your enemy within the wind." + Fore.RESET)
+            print(Fore.GREEN + f"Your spell strikes {target.name}, dealing {damage} ice damage." + Fore.RESET)
             target.challenge_rating -= damage
             self.skills["Freezing Wind"]["uses"] -= 1
         else: 
@@ -67,8 +68,8 @@ class NightWhisperer(Character):
     def phantom_feast(self, target):
         damage = randint(1, 6) + randint(1, 6)
         if self.skills["Phantom Feast"]["uses"] > 0:
-            print("You weave the shadows into a spectral feast, a low-pitched, hypnotic chant escaping from your lips as you ensnare the target in your illusion.")
-            print(f"{target.name} suffers {damage} illusion damage.")
+            print(Fore.YELLOW + "You weave the shadows into a spectral feast, a low-pitched, hypnotic chant escaping from your lips as you ensnare the target in your illusion." + Fore.RESET)
+            print(Fore.GREEN + f"{target.name} suffers {damage} illusion damage." + Fore.RESET)
             target.challenge_rating -= damage
             self.skills["Phantom Feast"]["uses"] -= 1
         else: 
@@ -77,8 +78,8 @@ class NightWhisperer(Character):
     def moonlight_barrage(self, target):
         damage = randint(1, 8) + randint(1, 8) + randint(1, 4)
         if self.skills["Moonlight Barrage"]["uses"] > 0:
-            print("You raise your hand, shadows and moonlight swirling around them to create a storm of uncast shadows.")
-            print(f"You unleash a volley of spectral blades, piercing {target.name} for {damage} raw magic damage.")
+            print(Fore.YELLOW + "You raise your hand, shadows and moonlight swirling around them to create a storm of uncast shadows." + Fore.RESET)
+            print(Fore.GREEN + f"You unleash a volley of spectral blades, piercing {target.name} for {damage} raw magic damage." + Fore.RESET)
             target.challenge_rating -= damage
             self.skills["Moonlight Barrage"]["uses"] -= 1
         else: 
@@ -102,8 +103,8 @@ class CrimsonBlade(Character):
     def bloodbath_barrage(self, target): 
         damage = randint(1, 8)
         if self.skills["Bloodbath Barrage"]["uses"] > 0:
-            print("You swiftly unleash your blade, whirling into a crimson-soaked cyclone as you scream towards your enemy.")
-            print(f"{target.name} suffers {damage} physical damage.")
+            print(Fore.YELLOW + "You swiftly unleash your blade, whirling into a crimson-soaked cyclone as you scream towards your enemy." + Fore.RESET)
+            print(Fore.GREEN + f"{target.name} suffers {damage} physical damage." + Fore.RESET)
             target.challenge_rating -= damage
             self.skills["Bloodbath Barrage"]["uses"] -= 1
         else: 
@@ -112,8 +113,8 @@ class CrimsonBlade(Character):
     def crimson_cleaver(self, target):
         damage = randint(1, 6) + randint(1, 6) + randint(1, 6)
         if self.skills["Crimson Cleaver"]["uses"] > 0:
-            print("The ground trembles as you slams their weapon into the earth. A crimson shockwave erupts, cracking the ground and sending tremors that ripple outward.")
-            print(f"{target.name} fails to escape your shockwave, dealing {damage} physical damage.")
+            print(Fore.YELLOW + "The ground trembles as you slams their weapon into the earth. A crimson shockwave erupts, cracking the ground and sending tremors that ripple outward." + Fore.RESET)
+            print(Fore.GREEN + f"{target.name} fails to escape your shockwave, dealing {damage} physical damage." + Fore.RESET)
             target.challenge_rating -= damage
             self.skills["Crimson Cleaver"]["uses"] -= 1
         else: 
@@ -138,8 +139,8 @@ class SunsHunter(Character):
     def hymn_of_helios(self, target):
         damage = randint(1, 6) + randint(1, 4)
         if self.skills["Hymn of Helios"]["uses"] > 0:
-            print(f"As you draw your bow, light gathers around your arrowhead with the fierceness of the sun as you unleash your arrow, chanting the Sun's blessing.")
-            print(f"You strike true, dealing {damage} fire damage to {target.name}.")
+            print(Fore.YELLOW + f"As you draw your bow, light gathers around your arrowhead with the fierceness of the sun as you unleash your arrow, chanting the Sun's blessing." + Fore.RESET)
+            print(Fore.GREEN + f"You strike true, dealing {damage} fire damage to {target.name}." + Fore.RESET)
             target.challenge_rating -= damage
             self.skills["Hymn of Helios"]["uses"] -= 1
         else: 
@@ -147,8 +148,8 @@ class SunsHunter(Character):
     def suns_ire(self, target):
         damage = randint(1, 6) + randint(1, 6)
         if self.skills["Sun's Ire"]["uses"] > 0:
-            print("Gritting your teeth and drawing on the Sun's power, you unleashe a devastating solar projectile towards your target.")
-            print(f"Finding your mark, {target.name} suffers {damage} fire damage.")
+            print(Fore.YELLOW + "Gritting your teeth and drawing on the Sun's power, you unleashe a devastating solar projectile towards your target." + Fore.RESET)
+            print(Fore.GREEN + f"Finding your mark, {target.name} suffers {damage} fire damage." + Fore.RESET)
             target.challenge_rating -= damage
             self.skills["Sun's Ire"]["uses"] -= 1
         else: 
@@ -157,8 +158,8 @@ class SunsHunter(Character):
     def hunters_volley(self, target):
         damage = randint(1, 8) + randint(1, 8) + randint(1, 8)
         if self.skills["Hunter's Volley"]["uses"] != 0:
-            print(f"You unleash a storm of sun-kissed arrows, each shot finding their mark without effort.")
-            print(f"{target.name} suffers {damage} ranged damage.")
+            print(Fore.YELLOW + f"You unleash a storm of sun-kissed arrows, each shot finding their mark without effort." + Fore.RESET)
+            print(Fore.GREEN + f"{target.name} suffers {damage} ranged damage." + Fore.RESET)
             target.challenge_rating -= damage
             self.skills["Hunter's Volley"]["uses"] -= 1
         else: 

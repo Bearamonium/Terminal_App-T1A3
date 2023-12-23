@@ -1,7 +1,7 @@
 from random import randint
 from prettytable import PrettyTable
 import textwrap
-from colorama import Fore, Style, Back
+from colorama import Fore, Style
 from inventory_items import Items, Weapon, Armour, items, weapons, armour
 from character import CrimsonBlade, NightWhisperer, SunsHunter, NoUsesLeft
 from enemies import MossHaggardens, Whisperers, Gloomweavers, BoneGnashers, Xhoth
@@ -14,7 +14,10 @@ def initialise_game():
         "entrance" : {
             "description" : "Amoria's maw gapes, a silent scream carved in stone. Moss, like venomous veins, crawls across the shattered stone entrance. Silence hangs heavy, broken only by dripping.. something, each drop a chilling knell.",
             "additional description" : "Beyond the entrance, shadows twist and dance as they call upon you to enter the depths of Amoria.",
-            "exits" : {"north" : "passage"}
+            "exits" : {"north" : "passage"},
+            "enemies" : [
+                Xhoth(15, [Xhoth.consume_essence, Xhoth.night_terror, Xhoth.shadow_claws], True)
+            ]
         }, 
         "passage" : {
             "description" : "A single, skeletal bridge spans the chasm, its bones bleached white. With a tentative step, the aged-decayed wood groans in protest under your feet. A quick glance into the abyss below, shadows writhe with unseen eyes glinting like poisoned emeralds.", 
@@ -59,7 +62,7 @@ def initialise_game():
         },
         "dark passageway" : {
             "description" : "An unnatural silence hangs in the air, broken only by the soft crunch of your boots on unseen debris. No dripping water, no rustle of unseen creatures, just an oppressive quiet that presses against your ears like a physical weight. You swear you can feel eyes watching from the darkness, unseen and hungry, but see nothing. What lurks within these walls?", 
-            "exits" : {"north" : "misty cavern", "south" : "statue room"}, 
+            "exits" : {"west" : "misty cavern", "south" : "statue room"}, 
             "item use" : [items["Fire Orb"]],
             "item used exits" : {"north" : "misty cavern", "south" : "statue room", "east" : "Xhoth's Rest"}
         }, 
@@ -125,7 +128,7 @@ def start_game():
     while True: 
         global current_room
         try:      
-            print(Fore.GREEN + text_wrapper.fill(rooms[current_room]["description"]))
+            print(Fore.GREEN + text_wrapper.fill(rooms[current_room]["description"]) + Fore.RESET)
 
             if current_room == "Boss Room":
                 boss_Xhoth()
@@ -279,32 +282,35 @@ def explore_room():
         start_combat(enemy)
 
     if "items" in rooms[current_room] and len(rooms[current_room]["items"]) > 0:
-        while len(rooms[current_room]["items"]) > 0:
-            for item in rooms[current_room]["items"]:
-                print(Fore.LIGHTCYAN_EX + f"Something shiny catches your eye. You step closer and find yourself looking at a {item.name}!" + Fore.RESET)
-                user_choice = input("Pick up the item? (y/n) ").lower()
-                match user_choice:
-                    case "y":
-                        if isinstance(item, Weapon):
-                            player.inventory.append(item)
-                            rooms[current_room]["items"].remove(item)
-                        elif isinstance(item, Armour):
-                            player.inventory.append(item)
-                            rooms[current_room]["items"].remove(item)
-                        else:
-                            player.inventory.append(item)
-                            rooms[current_room]["items"].remove(item)
-                        break
+        for item in rooms[current_room]["items"]:
+            print(Fore.LIGHTCYAN_EX + f"Something shiny catches your eye. You step closer and find yourself looking at a {item.name}!" + Fore.RESET)
+            user_choice = input("Pick up the item? (y/n) ").lower()
+            match user_choice:
+                case "y":
+                    if isinstance(item, Weapon):
+                        player.inventory.append(item)
+                    elif isinstance(item, Armour):
+                        player.inventory.append(item)
+                    else:
+                        player.inventory.append(item)
+                    rooms[current_room]["items"].remove(item)
+                    break # Exit the loop to proceed to the next item (if any)
+                case "n" :
+                    print(f"You don't collect the {item.name}.")
+                    break # Break out of the loop and the outer while loop
 
+            if not rooms[current_room]["items"]:
+                break # Exit the while loop if all items have been collected or ignored
     else: 
-        print("This area seems bare of any treasure or surprises.")
+        print(Fore.YELLOW + text_wrapper.fill("""
+        This area seems bare of any treasure or surprises."""))
 
 def boss_Xhoth():
-    print(f"XHOTH: {player_name}, welcome to your final resting place.")
-    enemy = rooms[current_room]["boss"][0]
+    print(Fore.RED + text_wrapper.fill(f"XHOTH: Might adventuer, a foolish decision to enter my domain on your behalf. For the intrusion, allow me to be the one to welcome you to your final resting place.") + Fore.RESET)
+    enemy = rooms[current_room]["enemies"][0]
     start_combat(enemy)
-    print("Silence. A single ray of light pierces the gloom, illuminating the dust motes dancing in its path. Victory, but at what cost? The weight of the journey settles, a bittersweet blend of triumph and loss. But, Xhoth was just the first step on your hellish journey, and Amoria can't be kept waiting...")
-    print("You have successfully cleared the first floor of Amoria! Thank you for playing and we hope you will be eager to return and continue your players journey on the second floor of Amoria, for the real danger has only just begun.")
+    print(Fore.YELLOW + text_wrapper.fill("Silence. A single ray of light pierces the gloom, illuminating the dust motes dancing in its path. Victory, but at what cost? The weight of the journey settles, a bittersweet blend of triumph and loss. But, Xhoth was just the first step on your hellish journey, and Amoria can't be kept waiting...") + Fore.RESET)
+    print(Fore.GREEN + "\n\nYou have successfully cleared the first floor of Amoria! Thank you for playing and we hope you will be eager to return and continue your players journey on the second floor of Amoria, for the real danger has only just begun." + Fore.RESET)
     game_over()
 
 def game_over():
@@ -324,34 +330,39 @@ def use_item():
 
         while True: 
             item_choice = input("> ").lower()
-            match item_choice: 
-                case "candle key":
-                    if items["Candle Key"] in rooms[current_room]["item use"]:
-                        print("Used 'Candle Key'.")
-                        print("You place the key gently in the opening on the door, pushing it outwards until a loud click is heard. The ground beneath you trembles as the door cracks in half, illuminating the room in a crude obsidian light. Fear reaches for you, for your soul, as the light grows brighter. But it's not your fear. It's the fear of the fallen beyond this door. The fear of the defeated, the agony of their loss, washes over you in waves. The stench of dread and despair grows stronger as the crack seeping obsidian all but disintigrates the door, leaving a solid stone archway, paving your fate for better or worse.")
-                        rooms[current_room]["item use"].remove(items["Candle Key"])
-                        rooms[current_room]["exits"] = rooms[current_room]["item used exits"]
-                        break
-                    else:
-                        print("This item cannot be used in this room.")
-                        break
-                case "fire orb":
-                    if items["Fire Orb"] in rooms[current_room]["item use"]:
-                        print("Used 'Fire Orb'.")
-                        print("A soft click can be heard, along with the scraping sound of stone shifting and sliding against itself.")
-                        rooms[current_room]["item use"].remove(items["Fire Orb"])
-                        rooms[current_room]["exits"] = rooms[current_room]["item used exits"]
-                        break
-                    else:
-                        print("This item cannot be used in this room.")
-                        break
-                case "golden sphere":
-                    print("This item cannot be used yet.")
-                    break
-                case _:
-                    print("Please select one of the available items to use.")
+
+            if item_choice in ["candle key", "fire orb"]:
+                if "item use" in rooms[current_room]:
+                    match item_choice: 
+                        case "candle key":
+                            if items["Candle Key"] in rooms[current_room]["item use"]:
+                                print("Used 'Candle Key'.")
+                                print("You place the key gently in the opening on the door, pushing it outwards until a loud click is heard. The ground beneath you trembles as the door cracks in half, illuminating the room in a crude obsidian light. Fear reaches for you, for your soul, as the light grows brighter. But it's not your fear. It's the fear of the fallen beyond this door. The fear of the defeated, the agony of their loss, washes over you in waves. The stench of dread and despair grows stronger as the crack seeping obsidian all but disintigrates the door, leaving a solid stone archway, paving your fate for better or worse.")
+                                rooms[current_room]["item use"].remove(items["Candle Key"])
+                                rooms[current_room]["exits"] = rooms[current_room]["item used exits"]
+                                player.inventory.remove(items["Candle Key"])
+                                return
+                        case "fire orb":
+                            if items["Fire Orb"] in rooms[current_room]["item use"]:
+                                print("Used 'Fire Orb'.")
+                                print("A soft click can be heard, along with the scraping sound of stone shifting and sliding against itself.")
+                                rooms[current_room]["item use"].remove(items["Fire Orb"])
+                                rooms[current_room]["exits"] = rooms[current_room]["item used exits"]
+                                player.inventory.remove(items["Fire Orb"])
+                                return
+                else:
+                    print(f"You cannot use {item_name} in this room.")
+                    return
+
+            elif item_choice == "golden sphere":
+                print("This item cannot be used yet.")
+                return
+                
+            else: 
+                print("Invalid entry. Please select an item from your inventory.")
     else: 
         print("You currently have no items available for use.")
+        return
 
 def manage_inventory():
     while True: 

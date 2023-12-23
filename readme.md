@@ -151,11 +151,13 @@ Alternitively, you could open your terminal app in the current folder by right c
 bash run.sh
 ```
 
-### Python Windows Installation Steps: 
+### Windows Installation Steps: 
+
+#### Download and install Python
 
 1. Download the Installer:
 
-- Visit the official Python website: https://www.python.org/downloads/windows/
+- Visit the official Python website: https://www.python.org/downloads/windows/.
 - Choose the latest stable version of Python 3 (e.g., Python 3.10 as of today).
 - Click the "Download Windows installer (64-bit)" button (or 32-bit if needed).
 
@@ -170,6 +172,19 @@ bash run.sh
 - Open a command prompt or PowerShell window.
 - Type python --version and press Enter.
 - If Python is installed correctly, you'll see its version number displayed.
+
+#### Install WSL
+
+1. Open Windows Powershell terminal
+    - Run command ```wsl --install```.
+    - Set up username and password.
+    - Reboot system.
+
+2. Open Ubunu terminal 
+    - Run command ```sudo apt update```, followed by ```sudo apt upgrade```.
+    - After the two commands above are finalised, you will need to then run ```sudo apt-get install python3.10-venv```.<br>
+      The above commands should then have successfully installed everything you need to run the ```bash run.sh``` in the Windows Powershell Terminal. 
+
 
 
 
