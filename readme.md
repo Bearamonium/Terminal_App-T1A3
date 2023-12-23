@@ -6,9 +6,11 @@
 
 #### October 2023 Standard Cohort, Coder Academy
 
-## GitHub Repository Link
+## Relevant Links
 
-https://github.com/Bearamonium/Terminal_App-T1A3.git
+[Github Repository](https://github.com/Bearamonium/Terminal_App-T1A3)
+
+[Presentation](https://youtu.be/OAqQvD2NOkE)
 
 ## Text-Based Dungeon Crawler
 
@@ -124,6 +126,8 @@ https://trello.com/invite/b/0OJzT7jV/ATTI306d9fa0e046d2ea4643d11059b7f5282E1CD14
 ![Alt text](./resources/Screenshot%202023-12-23%20110139.png)
 
 ![Alt text](./resources/Screenshot%202023-12-23%20111943.png)
+
+My manual testing is included in the source_code file, which runs through the tests I ran on my code to ensure it was correctly working. Had a few tries at it, until finally everything was working just the way I had intended! 
 
 ## Installation & Guide
 
