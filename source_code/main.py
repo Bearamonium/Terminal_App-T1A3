@@ -15,9 +15,6 @@ def initialise_game():
             "description" : "Amoria's maw gapes, a silent scream carved in stone. Moss, like venomous veins, crawls across the shattered stone entrance. Silence hangs heavy, broken only by dripping.. something, each drop a chilling knell.",
             "additional description" : "Beyond the entrance, shadows twist and dance as they call upon you to enter the depths of Amoria.",
             "exits" : {"north" : "passage"},
-            "enemies" : [
-                Xhoth(15, [Xhoth.consume_essence, Xhoth.night_terror, Xhoth.shadow_claws], True)
-            ]
         }, 
         "passage" : {
             "description" : "A single, skeletal bridge spans the chasm, its bones bleached white. With a tentative step, the aged-decayed wood groans in protest under your feet. A quick glance into the abyss below, shadows writhe with unseen eyes glinting like poisoned emeralds.", 
